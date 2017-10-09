@@ -1,5 +1,6 @@
 // Imports
 const serialport = require("serialport");
+const opnUtils = require("./scripts/opn_utils");
 
 // Create port -- HARDCODED COM4  TODO:
 const port = new serialport("COM4", {
@@ -14,33 +15,6 @@ const port = new serialport("COM4", {
 let checkOnce = false,
 	barcodeData = new ArrayBuffer(),
 	getCodesCount = 0;
-
-// HELPER - Create a Uint8Array based on two different ArrayBuffers
-const _appendBuffer = (buffer1, buffer2) => {
-	const temp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
-	temp.set(new Uint8Array(buffer1), 0);
-	temp.set(new Uint8Array(buffer2), buffer1.byteLength);
-	return temp.buffer;
-};
-
-// HELPER - Extract packed timestamps
-const extractPackedTimestamp = (b1, b2, b3, b4, b) => {
-	let longDate = byteArrayToLong([b1, b2, b3, b4, b]);
-	const year = 2000 + parseInt(longDate & 0x3f);
-	longDate >>= 6;
-	const month = parseInt(longDate & 0x0f) - 1;
-	longDate >>= 4;
-	const day = parseInt(longDate & 0x1f);
-	longDate >>= 5;
-	const hour = parseInt(longDate & 0x1f);
-	longDate >>= 5;
-	const mins = parseInt(longDate & 0x3f);
-	longDate >>= 6;
-	const secs = parseInt(longDate & 0x3f);
-
-	const extractedDate = new Date(year, month, day, hour, mins, secs);
-	return extractedDate;
-};
 
 port.on("open", err => {
 	if (err) {
@@ -101,7 +75,7 @@ port.on("open", err => {
 			console.log("DATA -- Clear/Powered Down");
 		} else {
 			console.log("DATA -- Received barcode data...");
-			barcodeData = _appendBuffer(barcodeData, data);
+			barcodeData = opnUtils._appendBuffer(barcodeData, data);
 
 			if (offset === 0) {
 				console.log(
@@ -130,15 +104,19 @@ port.on("open", err => {
 						batchCount += 1;
 
 						// TODO: SYMBOLOGY IMPORT
-						// symbology = symbologies[first[0]];
+						symbology = opnUtils.symbologies[first[0]];
 						scan = first.slice(1, first.length - 4).toString();
-						const scanDateTime = extractPackedTimestamp(
+						const scanDateTime = opnUtils.extractPackedTimestamp(
 							first[first.length - 1],
 							first[first.length - 2],
 							first[first.length - 3],
 							first[first.length - 4]
 						);
-						detectedScans.push({ type: "", data: scan, time: scanDateTime });
+						detectedScans.push({
+							type: symbology,
+							data: scan,
+							time: scanDateTime
+						});
 					} else {
 						codes = false;
 					}
