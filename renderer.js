@@ -15,12 +15,31 @@ let checkOnce = false,
 	barcodeData = new ArrayBuffer(),
 	getCodesCount = 0;
 
-// Helper - Create a Uint8Array based on two different ArrayBuffers
+// HELPER - Create a Uint8Array based on two different ArrayBuffers
 const _appendBuffer = (buffer1, buffer2) => {
 	const temp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
 	temp.set(new Uint8Array(buffer1), 0);
 	temp.set(new Uint8Array(buffer2), buffer1.byteLength);
 	return temp.buffer;
+};
+
+// HELPER - Extract packed timestamps
+const extractPackedTimestamp = (b1, b2, b3, b4, b) => {
+	let longDate = byteArrayToLong([b1, b2, b3, b4, b]);
+	const year = 2000 + parseInt(longDate & 0x3f);
+	longDate >>= 6;
+	const month = parseInt(longDate & 0x0f) - 1;
+	longDate >>= 4;
+	const day = parseInt(longDate & 0x1f);
+	longDate >>= 5;
+	const hour = parseInt(longDate & 0x1f);
+	longDate >>= 5;
+	const mins = parseInt(longDate & 0x3f);
+	longDate >>= 6;
+	const secs = parseInt(longDate & 0x3f);
+
+	const extractedDate = new Date(year, month, day, hour, mins, secs);
+	return extractedDate;
 };
 
 port.on("open", err => {
@@ -89,11 +108,55 @@ port.on("open", err => {
 					"All barcode data received. Length: ",
 					barcodeData.byteLength
 				);
-				console.log(data.slice(10, -3)); // ???
+
+				// Get Barcodes buffer
+				let codes = data.slice(10, -3);
+
+				let length = null,
+					first = null,
+					scan = null,
+					symbology = null,
+					batchCount = 0,
+					detectedScans = [];
+
+				while (codes) {
+					length = parseInt(codes[0]);
+					first = new ArrayBuffer(length);
+					first = codes.slice(1, length + 1);
+					data = codes.slice(length + 1);
+
+					if (first.byteLength !== 0) {
+						codes = codes.slice(length + 1);
+						batchCount += 1;
+
+						// TODO: SYMBOLOGY IMPORT
+						// symbology = symbologies[first[0]];
+						scan = first.slice(1, first.length - 4).toString();
+						const scanDateTime = extractPackedTimestamp(
+							first[first.length - 1],
+							first[first.length - 2],
+							first[first.length - 3],
+							first[first.length - 4]
+						);
+						detectedScans.push({ type: "", data: scan, time: scanDateTime });
+					} else {
+						codes = false;
+					}
+				}
+
+				if (batchCount > 0) {
+					console.log(`Barcodes: ${JSON.stringify(detectedScans)}`);
+				} else if (getCodesCount < 50) {
+					getCodesCount += 1;
+					port.write(getCodes);
+				} else {
+					console.log("No barcodes to read..");
+				}
 			}
 		}
 	});
 
+	// Basic commands
 	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device
 	const clock = new Buffer([0x0a, 0x02, 0x00, 0x5d, 0xaf]); // Check clock drift
 	const getCodes = new Buffer([0x07, 0x02, 0x00, 0x9e, 0x3e]); // Get Barcodes
