@@ -1,0 +1,25 @@
+{
+	"name": "electron-opn",
+	"version": "1.0.1",
+	"description":
+		"An Electron wrapper for interacting with Opticon's OPN-2001 devices.",
+	"main": "main.js",
+	"scripts": {
+		"start": "electron .",
+		"install": "electron-rebuild"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/C-Rodg/OPN-Device-application.git"
+	},
+	"keywords": ["Electron", "quick", "start", "tutorial", "demo"],
+	"author": "C-Rodg",
+	"license": "MIT",
+	"devDependencies": {
+		"electron": "^1.4.1",
+		"electron-rebuild": "^1.4.0"
+	},
+	"dependencies": {
+		"serialport": "^4.0.7"
+	}
+}
