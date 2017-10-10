@@ -8,9 +8,12 @@ import {
 	Text
 } from "react-desktop/windows";
 
+// Electron Communication
 const electron = require("electron");
 let { remote } = electron;
 const { ipcRenderer } = electron;
+
+import navigation from "./NavigationConfig";
 
 class App extends Component {
 	static defaultProps = {
@@ -19,7 +22,8 @@ class App extends Component {
 	};
 
 	state = {
-		isMaximized: false
+		isMaximized: false,
+		selectedPane: "Summary"
 	};
 
 	componentDidMount() {
@@ -65,6 +69,24 @@ class App extends Component {
 		this.setState({ isMaximized: !this.state.isMaximized });
 	};
 
+	// Render the navigation and content
+	renderNavigation = () => {
+		return navigation.map(navItem => {
+			const ComponentContent = navItem.comp;
+			return (
+				<NavPaneItem
+					key={navItem.title}
+					title={navItem.title}
+					selected={this.state.selectedPane === navItem.title}
+					icon={<i className="material-icons">{navItem.icon}</i>}
+					onSelect={() => this.setState({ selectedPane: navItem.title })}
+				>
+					<ComponentContent />
+				</NavPaneItem>
+			);
+		});
+	};
+
 	render() {
 		return (
 			<Window
@@ -82,17 +104,7 @@ class App extends Component {
 					onMinimizeClick={this.minimize}
 					onRestoreDownClick={this.toggleMaximize}
 				/>
-				<NavPane>
-					<NavPaneItem title="Summary">
-						<Text>Summary</Text>
-					</NavPaneItem>
-					<NavPaneItem title="Data">
-						<Text>Data</Text>
-					</NavPaneItem>
-					<NavPaneItem title="Devices">
-						<Text>Devices</Text>
-					</NavPaneItem>
-				</NavPane>
+				<NavPane>{this.renderNavigation()}</NavPane>
 			</Window>
 		);
 	}
