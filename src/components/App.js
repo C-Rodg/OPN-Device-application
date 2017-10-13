@@ -10,11 +10,6 @@ import ContentSummary from "./ContentSummary";
 import ContentLogin from "./ContentLogin";
 import Nav from "./Nav";
 
-// Electron Communication
-const electron = require("electron");
-let { remote } = electron;
-const { ipcRenderer } = electron;
-
 class App extends Component {
 	static defaultProps = {
 		color: "#cc7f29",
@@ -28,11 +23,11 @@ class App extends Component {
 
 	componentDidMount() {
 		console.log("MOUNTED <APP/>");
-		ipcRenderer.send("get-devices");
-		ipcRenderer.on("get-devices-response", (event, arg) => {
-			console.log(event);
-			console.log(arg);
-		});
+		// ipcRenderer.send("get-devices");
+		// ipcRenderer.on("get-devices-response", (event, arg) => {
+		// 	console.log(event);
+		// 	console.log(arg);
+		// });
 	}
 
 	// Authenticate the user

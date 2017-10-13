@@ -1,0 +1,21 @@
+.floating-action-button {
+	background-color: #22635c;
+	transition: background-color 0.3s ease-in-out;
+	width: 70px;
+	height: 70px;
+	text-align: center;
+	border-radius: 50%;
+	color: #fff;
+	cursor: pointer;
+	user-select: none;
+	box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 10px, rgba(0, 0, 0, 0.23) 0px 3px 10px;
+}
+
+.floating-action-button:hover {
+	background-color: #358577;
+}
+
+.floating-action-button i {
+	line-height: 70px;
+	font-size: 35px;
+}
