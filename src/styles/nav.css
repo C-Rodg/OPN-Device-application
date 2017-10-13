@@ -1,0 +1,44 @@
+.nav {
+	background: linear-gradient(to right, #44a08d, #093637);
+	padding: 20px;
+	font-weight: 300;
+	box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+}
+
+.nav-title {
+	font-size: 56px;
+	color: rgba(255, 255, 255, 0.87);
+	margin-bottom: 10px;
+}
+
+.nav-items a {
+	font-size: 24px;
+	margin: 0 25px 0 5px;
+	padding: 5px 8px;
+	position: relative;
+	color: rgba(255, 255, 255, 0.77);
+}
+
+.nav-items a.nav-active {
+	color: #fff;
+}
+
+.nav-items a::after {
+	content: "";
+	opacity: 0;
+	transform: scaleX(0);
+	transition: all 0.3s ease-in-out;
+	height: 3px;
+	width: 100%;
+	background-color: #fff;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	border-radius: 2px;
+}
+
+.nav-items a.nav-active::after {
+	opacity: 1;
+	transform: scaleX(1);
+}

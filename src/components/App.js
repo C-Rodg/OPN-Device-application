@@ -1,28 +1,19 @@
+// Imports
 import React, { Component } from "react";
+import { Route, Redirect } from "react-router-dom";
+
+// Components
 import "../styles/default.css";
-import { Route, NavLink } from 'react-router-dom';
+import ContentData from "./ContentData";
+import ContentDevices from "./ContentDevices";
+import ContentSummary from "./ContentSummary";
+import ContentLogin from "./ContentLogin";
+import Nav from "./Nav";
 
 // Electron Communication
 const electron = require("electron");
 let { remote } = electron;
 const { ipcRenderer } = electron;
-
-const SummaryRoute = () => {
-	return (
-		<div className="TEST">Summary!</div>
-	);
-};
-const DataRoute = () => {
-	return (
-		<div className="TEST">Dataaa!</div>
-	);
-};
-const DevicesRoute = () => {
-	return (
-		<div className="TEST">Devicesss!</div>
-	);
-};
-
 
 class App extends Component {
 	static defaultProps = {
@@ -31,7 +22,8 @@ class App extends Component {
 	};
 
 	state = {
-		selectedTab: 'summary'
+		isAuthenticated: false,
+		selectedTab: "summary"
 	};
 
 	componentDidMount() {
@@ -43,24 +35,37 @@ class App extends Component {
 		});
 	}
 
+	// Authenticate the user
+	authenticate = () => {
+		this.setState({ isAuthenticated: true });
+	};
 
 	render() {
 		return (
 			<div className="app">
-				<nav>
-					<div className="nav-title">
-						Validar Quickscan Central
-					</div>
-					<div className="nav-items">
-						<NavLink to="/" activeClassName="nav-active">Summary</NavLink>
-						<NavLink to="/data" activeClassName="nav-active">Data</NavLink>
-						<NavLink to="/devices" activeClassName="nav-active">Devices</NavLink>
-					</div>
-				</nav>
+				<Nav />
 				<main>
-					<Route path="/" exact component={SummaryRoute} />
-					<Route path="/data" exact component={DataRoute} />
-					<Route path="/devices" exact component={DevicesRoute} />
+					<Route path="/" exact component={ContentSummary} />
+
+					<Route
+						path="/data"
+						exact
+						render={props => {
+							return this.state.isAuthenticated ? (
+								<ContentData {...props} />
+							) : (
+								<ContentLogin {...props} onAuthenticate={this.authenticate} />
+							);
+						}}
+					/>
+					<Route path="/devices" exact component={ContentDevices} />
+					<Route
+						path="/login"
+						exact
+						render={() => {
+							return <ContentLogin onAuthenticate={this.authenticate} />;
+						}}
+					/>
 				</main>
 			</div>
 		);
