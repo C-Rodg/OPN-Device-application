@@ -43,7 +43,6 @@
     "webpack-dev-server": "^2.9.1"
   },
   "dependencies": {
-    "react-desktop": "^0.3.1",
     "serialport": "^4.0.7"
   }
 }

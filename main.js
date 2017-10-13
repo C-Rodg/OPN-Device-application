@@ -26,9 +26,17 @@ function createWindow() {
 		width: 1200,
 		height: 600,
 		show: false,
-		frame: false,
-		transparent: true,
-		fullscreen: true
+		//frame: false,
+		//transparent: true,
+		//fullscreen: true,
+		resizable: true,
+		minimizable: true,
+		movable: true,
+		closable: true,
+		fullscreenable: true,
+		title: 'Quickscan Central',
+		frame: true
+		//backgroundColor: '#00796b'
 	});
 
 	let indexPath;

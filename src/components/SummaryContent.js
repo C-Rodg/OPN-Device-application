@@ -1,10 +1,15 @@
 import React, { Component } from "react";
 
-import { Text } from "react-desktop/windows";
+import { Text, View, TextInput } from "react-desktop/windows";
 
 class SummaryContent extends Component {
 	render() {
-		return <Text>My summary content...</Text>;
+		return (
+			<View padding="20px">
+				<Text>SuMMARYYY</Text>
+				<TextInput label="test" />
+			</View>	
+		);
 	}
 }
 
