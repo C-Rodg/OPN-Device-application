@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import injectTapEventPlugin from 'react-tap-event-plugin';
 import "../styles/default.css";
 
 
@@ -7,6 +8,9 @@ const electron = require("electron");
 let { remote } = electron;
 const { ipcRenderer } = electron;
 
+
+// Fix for tap events?
+injectTapEventPlugin();
 
 class App extends Component {
 	static defaultProps = {
