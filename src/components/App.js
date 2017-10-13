@@ -1,16 +1,18 @@
 import React, { Component } from "react";
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import "../styles/default.css";
-
+import { Route } from 'react-router-dom';
 
 // Electron Communication
 const electron = require("electron");
 let { remote } = electron;
 const { ipcRenderer } = electron;
 
+const TestRoute = () => {
+	return (
+		<div className="TEST">TEST ROUTE SHOWED!</div>
+	);
+};
 
-// Fix for tap events?
-injectTapEventPlugin();
 
 class App extends Component {
 	static defaultProps = {
@@ -36,6 +38,9 @@ class App extends Component {
 		return (
 			<div className="app">
 				My App content here...
+				<main>
+					<Route path="/test" exact component={TestRoute} />
+				</main>
 			</div>
 		);
 	}
