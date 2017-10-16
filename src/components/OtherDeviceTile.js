@@ -1,11 +1,29 @@
 import React from "react";
 
-const OtherDeviceTile = () => {
+import { isQuickscan } from "../utils/helperUtils";
+
+const OtherDeviceTile = device => {
+	const isQuick = isQuickscan(device);
 	return (
-		<div className="other-device-tile">
-			My Other devices...
-			<div>comName (port), manufacturer(Model), Device: (quickscan/other)</div>
-			<div>switch to this device...</div>
+		<div
+			className={[
+				"device-tile",
+				"other-device-tile",
+				!isQuick ? "cancel-device" : ""
+			].join(" ")}
+			onClick={() => device.setDevice(isQuick, device)}
+		>
+			<div className="device-row device-name">
+				<span className="device-header">Device Type:</span>
+				{isQuick ? " Quickscan" : " Other"}
+			</div>
+			<div className="device-row device-manufacturer">
+				<span className="device-header">Manufacturer:</span>{" "}
+				{device.manufacturer}
+			</div>
+			<div className="device-row device-port">
+				<span className="device-header">Port:</span> {device.comName}
+			</div>
 		</div>
 	);
 };
