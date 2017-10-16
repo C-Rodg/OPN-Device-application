@@ -10,6 +10,13 @@ import ContentSummary from "./ContentSummary";
 import ContentLogin from "./ContentLogin";
 import Nav from "./Nav";
 
+// Services
+import {
+	e_bootupApplication,
+	e_closeConnection,
+	e_createConnection
+} from "../services/electronServices";
+
 class App extends Component {
 	static defaultProps = {
 		color: "#cc7f29",
@@ -18,16 +25,20 @@ class App extends Component {
 
 	state = {
 		isAuthenticated: false,
-		selectedTab: "summary"
+		selectedTab: "summary",
+		currentDevice: null,
+		deviceList: []
 	};
 
 	componentDidMount() {
-		console.log("MOUNTED <APP/>");
-		// ipcRenderer.send("get-devices");
-		// ipcRenderer.on("get-devices-response", (event, arg) => {
-		// 	console.log(event);
-		// 	console.log(arg);
-		// });
+		e_bootupApplication()
+			.then(data => {
+				const { deviceList, currentDevice } = data;
+				this.setState({ deviceList, currentDevice });
+			})
+			.catch(err => {
+				console.log(err);
+			});
 	}
 
 	// Authenticate the user
@@ -35,12 +46,47 @@ class App extends Component {
 		this.setState({ isAuthenticated: true });
 	};
 
+	// Close the current connection
+	handleCloseConnection = () => {
+		e_closeConnection()
+			.then(data => {
+				this.setState({ currentDevice: null });
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	};
+
+	// Create a new connection
+	handleCreateConnection = device => {
+		e_createConnection(device)
+			.then(data => {
+				const { deviceList, currentDevice } = data;
+				this.setState({ deviceList, currentDevice });
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	};
+
 	render() {
 		return (
 			<div className="app">
 				<Nav />
 				<main>
-					<Route path="/" exact component={ContentSummary} />
+					<Route
+						path="/"
+						exact
+						render={props => {
+							return (
+								<ContentSummary
+									{...props}
+									currentDevice={this.state.currentDevice}
+									deviceList={this.state.deviceList}
+								/>
+							);
+						}}
+					/>
 
 					<Route
 						path="/data"
@@ -53,7 +99,21 @@ class App extends Component {
 							);
 						}}
 					/>
-					<Route path="/devices" exact component={ContentDevices} />
+					<Route
+						path="/devices"
+						exact
+						render={props => {
+							return (
+								<ContentDevices
+									{...props}
+									currentDevice={this.state.currentDevice}
+									deviceList={this.state.deviceList}
+									onCloseConnection={this.handleCloseConnection}
+									onCreateConnection={this.handleCreateConnection}
+								/>
+							);
+						}}
+					/>
 					<Route
 						path="/login"
 						exact

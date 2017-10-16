@@ -1,11 +1,12 @@
 // Create native window, control app life, communication to window
 const electron = require("electron");
-const { BrowserWindow, app, ipcMain } = electron;
+const { BrowserWindow, app } = electron;
 // Other Imports
 const path = require("path");
 const url = require("url");
 
-const serialport = require("serialport");
+// Electron Container Application Services
+const services = require("./container/backend-services");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -34,7 +35,7 @@ function createWindow() {
 		movable: true,
 		closable: true,
 		fullscreenable: true,
-		title: 'Quickscan Central',
+		title: "Quickscan Central",
 		frame: true
 		//backgroundColor: '#00796b'
 	});
@@ -94,19 +95,4 @@ app.on("activate", function() {
 	if (mainWindow === null) {
 		createWindow();
 	}
-});
-
-// Events for communicating with window application
-ipcMain.on("get-devices", (event, arg) => {
-	serialport.list((err, ports) => {
-		if (err) {
-			event.sender.send("get-devices-response", {
-				error: true,
-				message: "Unable to get serialport devices."
-			});
-			return false;
-		}
-		console.log(ports);
-		event.sender.send("get-devices-response", ports);
-	});
 });
