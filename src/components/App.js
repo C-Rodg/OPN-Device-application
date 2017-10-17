@@ -26,20 +26,54 @@ class App extends Component {
 	state = {
 		isAuthenticated: false,
 		selectedTab: "summary",
+
 		currentDevice: null,
-		deviceList: []
+		deviceList: [],
+		deviceTime: {},
+		deviceInfo: {},
+		barcodes: []
 	};
 
 	componentDidMount() {
+		// Get initial values
 		e_bootupApplication()
 			.then(data => {
-				const { deviceList, currentDevice } = data;
-				this.setState({ deviceList, currentDevice });
+				console.log(data);
+				this.parseDeviceObject(data);
 			})
 			.catch(err => {
 				console.log(err);
 			});
 	}
+
+	// Parse DeviceInfo object and set state
+	parseDeviceObject = data => {
+		const { barcodes, devices, info, time } = data;
+		let current = null;
+		for (let i = 0, j = devices.deviceList.length; i < j; i++) {
+			if (devices.deviceList[i].comName === devices.currentPort) {
+				current = devices.deviceList[i];
+				break;
+			}
+		}
+		this.setState({
+			barcodes,
+			deviceTime: time,
+			deviceInfo: info,
+			deviceList: devices.deviceList,
+			currentDevice: current
+		});
+	};
+
+	// Reset Current Device Props
+	resetCurrentDevice = () => {
+		this.setState({
+			currentDevice: null,
+			deviceTime: {},
+			deviceInfo: {},
+			barcodes: []
+		});
+	};
 
 	// Authenticate the user
 	authenticate = () => {
@@ -50,7 +84,7 @@ class App extends Component {
 	handleCloseConnection = () => {
 		e_closeConnection()
 			.then(data => {
-				this.setState({ currentDevice: null });
+				this.resetCurrentDevice();
 			})
 			.catch(err => {
 				console.log(err);
@@ -61,8 +95,8 @@ class App extends Component {
 	handleCreateConnection = device => {
 		e_createConnection(device)
 			.then(data => {
-				const { deviceList, currentDevice } = data;
-				this.setState({ deviceList, currentDevice });
+				console.log(data);
+				this.parseDeviceObject(data);
 			})
 			.catch(err => {
 				console.log(err);
