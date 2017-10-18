@@ -208,7 +208,6 @@ const getDeviceInfo = (com, event, responseName) => {
 						barcodeData = codes.slice(length + 1);
 						if (first.byteLength !== 0) {
 							codes = codes.slice(length + 1);
-							batchCount += 1;
 							symbology = opnUtils.symbologies[first[0] || "UNKNOWN"];
 							scan = first
 								.slice(1, first.length - 4)
