@@ -7,7 +7,7 @@ const { ipcRenderer } = electron;
 export const e_bootupApplication = () => {
 	return new Promise((resolve, reject) => {
 		ipcRenderer.send("bootup-application");
-		ipcRenderer.on("bootup-application-response", (event, arg) => {
+		ipcRenderer.once("bootup-application-response", (event, arg) => {
 			if (arg.error) {
 				reject(arg);
 			} else {
@@ -21,7 +21,7 @@ export const e_bootupApplication = () => {
 export const e_closeConnection = () => {
 	return new Promise((resolve, reject) => {
 		ipcRenderer.send("close-connection");
-		ipcRenderer.on("close-connection-response", (event, arg) => {
+		ipcRenderer.once("close-connection-response", (event, arg) => {
 			if (arg.error) {
 				reject(arg);
 			} else {
@@ -35,7 +35,7 @@ export const e_closeConnection = () => {
 export const e_createConnection = device => {
 	return new Promise((resolve, reject) => {
 		ipcRenderer.send("create-connection", device);
-		ipcRenderer.on("create-connection-response", (event, arg) => {
+		ipcRenderer.once("create-connection-response", (event, arg) => {
 			if (arg.error) {
 				reject(arg);
 			} else {

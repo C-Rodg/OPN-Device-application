@@ -45,7 +45,8 @@ const symbologies = {
 	0x21: "ISBT-128 concatenated",
 	0x90: "UPCE1+5",
 	0x06: "ITF",
-	0x28: "Macro PDF"
+	0x28: "Macro PDF",
+	UNKNOWN: "UNKNOWN"
 };
 
 // HELPER - Convert byteArray to long integer
@@ -57,12 +58,12 @@ const byteArrayToLong = byteArray => {
 	return value;
 };
 
-// HELPER - Create a Uint8Array based on two different ArrayBuffers
+// HELPER - Create a Uint8Array based on two different Uint8Arrays
 const _appendBuffer = (buffer1, buffer2) => {
 	const temp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
 	temp.set(new Uint8Array(buffer1), 0);
 	temp.set(new Uint8Array(buffer2), buffer1.byteLength);
-	return temp.buffer;
+	return temp;
 };
 
 // HELPER - Extract packed timestamps

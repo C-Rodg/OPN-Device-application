@@ -114,7 +114,7 @@ const getDeviceInfo = (com, event, responseName) => {
 	};
 
 	// Flags and initial settings -- reset these at some point?
-	let barcodeData = new ArrayBuffer(),
+	let barcodeData = new Uint8Array(),
 		getCodesCount = 0;
 
 	// On Port 'error'
@@ -189,46 +189,37 @@ const getDeviceInfo = (com, event, responseName) => {
 				// Handle Clear Data command
 				console.log("DATA -- Clear/Powered Down");
 			} else {
-				// Handle Get Barcode Data command
-				console.log("DATA -- Received barcode data...");
+				console.log("DATA -- Get Barcodes");
+				// Append barcode data
 				barcodeData = opnUtils._appendBuffer(barcodeData, data);
-
 				if (offset === 0) {
-					console.log(
-						"All barcode data received. Byte Length: ",
-						barcodeData.byteLength
-					);
-
-					// Get Barcodes buffer
-					let codes = data.slice(10, -3);
+					// Strip off prefix & postfix
+					let codes = barcodeData.slice(10, -3);
 
 					let length = null,
 						first = null,
 						scan = null,
 						symbology = null,
-						batchCount = 0,
 						detectedScans = [];
 
 					while (codes) {
 						length = parseInt(codes[0]);
-						first = new ArrayBuffer(length);
 						first = codes.slice(1, length + 1);
-						data = codes.slice(length + 1);
-
+						barcodeData = codes.slice(length + 1);
 						if (first.byteLength !== 0) {
 							codes = codes.slice(length + 1);
 							batchCount += 1;
-
-							symbology = opnUtils.symbologies[first[0]];
-							scan = first.slice(1, first.length - 4).toString();
+							symbology = opnUtils.symbologies[first[0] || "UNKNOWN"];
+							scan = first
+								.slice(1, first.length - 4)
+								.map(x => String.fromCharCode(x))
+								.join("");
 							const scanDateTime = opnUtils.extractPackedTimestamp(
 								first[first.length - 1],
 								first[first.length - 2],
 								first[first.length - 3],
 								first[first.length - 4]
 							);
-
-							// Push Scan
 							detectedScans.push({
 								type: symbology,
 								data: scan,
@@ -238,21 +229,8 @@ const getDeviceInfo = (com, event, responseName) => {
 							codes = false;
 						}
 					}
-
-					if (batchCount > 0) {
-						console.log("DONE getting barcodes. returning!");
-						// Assign full list of scans and send event
-						responseObject.barcodes = detectedScans;
-						event.sender.send(responseName, responseObject);
-					} else if (getCodesCount < 50) {
-						// Continue getting barcodes
-						console.log("Getting more barcodes...");
-						getCodesCount += 1;
-						port.write(getCodes);
-					} else {
-						console.log("No scans. returning!");
-						event.sender.send(responseName, responseObject);
-					}
+					responseObject.barcodes = detectedScans;
+					event.sender.send(responseName, responseObject);
 				}
 			}
 		});
