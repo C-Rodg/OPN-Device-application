@@ -27,6 +27,7 @@ class ContentLogin extends Component {
 					<form onSubmit={this.checkPassword}>
 						<div className="input-container">
 							<input
+								autoFocus
 								type="password"
 								id="data-password"
 								required="required"

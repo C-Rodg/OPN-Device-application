@@ -86,3 +86,26 @@
 .content-summary .nav-icon i:hover {
 	color: #555;
 }
+
+.sum-device-drift.error {
+	color: #c73829;
+}
+
+.second-row {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.second-row .sum-scan-info {
+	margin-right: 20px;
+}
+
+.second-row .sum-device,
+.second-row .sum-scan-info {
+	max-width: 430px;
+	flex: 1 1 430px;
+}
+
+.card.sum-total {
+	max-width: 880px;
+}
