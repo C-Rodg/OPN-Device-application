@@ -117,6 +117,9 @@ class App extends Component {
 									{...props}
 									currentDevice={this.state.currentDevice}
 									deviceList={this.state.deviceList}
+									deviceInfo={this.state.deviceInfo}
+									deviceTime={this.state.deviceTime}
+									barcodes={this.state.barcodes}
 								/>
 							);
 						}}

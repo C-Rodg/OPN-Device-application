@@ -7,6 +7,7 @@ const OtherDeviceTile = device => {
 	return (
 		<div
 			className={[
+				"card",
 				"device-tile",
 				"other-device-tile",
 				!isQuick ? "cancel-device" : ""
