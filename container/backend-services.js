@@ -209,8 +209,8 @@ const getDeviceInfo = (com, event, responseName) => {
 						if (first.byteLength !== 0) {
 							codes = codes.slice(length + 1);
 							symbology = opnUtils.symbologies[first[0] || "UNKNOWN"];
-							scan = first
-								.slice(1, first.length - 4)
+							// Convert scan from Uint8Array to normal array then map to characters
+							scan = Array.from(first.slice(1, first.length - 4))
 								.map(x => String.fromCharCode(x))
 								.join("");
 							const scanDateTime = opnUtils.extractPackedTimestamp(
