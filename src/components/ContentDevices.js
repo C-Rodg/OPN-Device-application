@@ -67,13 +67,13 @@ class ContentDevices extends Component {
 			<div className="container content-devices">
 				<div className="content-devices-list">
 					<div className="content-devices-list-current">
-						<div className="devices-list-title">Current Device:</div>
+						<div className="pre-card-section-title">Current Device:</div>
 						<div className="devices-list-list">
 							{this.renderCurrentDevice()}
 						</div>
 					</div>
 					<div className="content-devices-list-other">
-						<div className="devices-list-title">Other Devices:</div>
+						<div className="pre-card-section-title">Other Devices:</div>
 						<div className="devices-list-list">{this.renderOtherDevices()}</div>
 					</div>
 				</div>

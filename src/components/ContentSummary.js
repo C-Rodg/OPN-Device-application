@@ -5,9 +5,8 @@ import moment from "moment";
 
 import "../styles/summary.css";
 import { alertOptions } from "../utils/alertOptions";
+import { quickDateFormat, displayDateFormat } from "../utils/dateFormats";
 
-const quickDateFormat = "YYYY-MM-DDTHH:mm:ss.SSSSZ";
-const displayDateFormat = "h:mm a, MMM Do, YYYY";
 const tooMuchTimeDrift = 300;
 
 class ContentSummary extends Component {

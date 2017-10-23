@@ -7,7 +7,7 @@ const CurrentDeviceTile = device => {
 
 	return (
 		<div className="device-tile current-device-tile card">
-			<div className="close-icon" onClick={device.closeDevice}>
+			<div className="icon-card-hover close-icon" onClick={device.closeDevice}>
 				<i className="material-icons">close</i>
 			</div>
 			<div className="device-row device-name">

@@ -129,8 +129,14 @@ class App extends Component {
 						path="/data"
 						exact
 						render={props => {
-							return this.state.isAuthenticated ? (
-								<ContentData {...props} />
+							// TESTING
+							return true || this.state.isAuthenticated ? (
+								<ContentData
+									{...props}
+									barcodes={this.state.barcodes}
+									deviceTime={this.state.deviceTime}
+									deviceInfo={this.state.deviceInfo}
+								/>
 							) : (
 								<ContentLogin {...props} onAuthenticate={this.authenticate} />
 							);

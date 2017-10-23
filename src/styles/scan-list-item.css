@@ -1,0 +1,65 @@
+.scan-list-item {
+	position: relative;
+	border-top: 1px solid #d7d7d7;
+	z-index: 2;
+}
+
+.scan-list-item .more-item-info {
+	z-index: 4;
+}
+
+.scan-list-item .scan-item-content {
+	padding: 8px 10px;
+	background-color: #fff;
+	border-radius: 2px;
+	z-index: 3;
+}
+
+.scan-list-item.is-scan-code {
+	border-top: 2px solid #333;
+}
+
+.scan-list-item::first-child {
+	border-top: 0;
+}
+
+.scan-list-item .item-id {
+	font-weight: 500;
+	font-size: 1.1rem;
+	line-height: 1.1;
+}
+
+.scan-list-item .item-time {
+	color: #8e8e8e;
+}
+
+.scan-item-actions {
+	transform: translate3d(0, 0, 0);
+	opacity: 0;
+	transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 0 10px;
+	z-index: -1;
+}
+
+.scan-item-actions.is-open {
+	opacity: 1;
+	transform: translate3d(100%, 0, 0);
+}
+
+.scan-item-actions .action-icon {
+	font-size: 42px;
+	line-height: 57px;
+	cursor: pointer;
+}
+
+.scan-item-actions .add {
+	color: #1e5c56;
+}
+
+.scan-item-actions .remove {
+	color: #c73829;
+	margin-right: 5px;
+}
