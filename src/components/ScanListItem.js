@@ -22,6 +22,15 @@ class ScanListItem extends Component {
 		);
 	};
 
+	handleActionClick = (isAdd, idx) => {
+		if (isAdd) {
+			this.props.onOpenAddPortal(idx);
+		} else {
+			this.props.onOpenDeletePortal(idx);
+		}
+		this.setState({ isOpen: false });
+	};
+
 	render() {
 		return (
 			<div
@@ -30,7 +39,6 @@ class ScanListItem extends Component {
 					this.state.isScanCode ? "is-scan-code" : ""
 				].join(" ")}
 			>
-				
 				<div className="scan-item-content">
 					<div
 						className="more-item-info icon-card-hover"
@@ -41,16 +49,24 @@ class ScanListItem extends Component {
 					<div className="item-id">{this.props.scanId}</div>
 					<div className="item-time">{this.renderScanTime()}</div>
 				</div>
-                <div
+				<div
 					className={[
 						"scan-item-actions",
 						this.state.isOpen ? "is-open" : ""
 					].join(" ")}
 				>
-					<i className="material-icons action-icon remove">
+					<i
+						className="material-icons action-icon remove"
+						onClick={() => this.handleActionClick(false, this.props.idx)}
+					>
 						remove_circle_outline
 					</i>
-					<i className="material-icons action-icon add">add_circle_outline</i>
+					<i
+						className="material-icons action-icon add"
+						onClick={() => this.handleActionClick(true, this.props.idx)}
+					>
+						add_circle_outline
+					</i>
 				</div>
 			</div>
 		);

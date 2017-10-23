@@ -103,6 +103,16 @@ class App extends Component {
 			});
 	};
 
+	// Deletion of a barcode is confirmed
+	handleDeleteBarcode = idx => {
+		const newBarcodeList = this.state.barcodes.filter((code, currentIdx) => {
+			return currentIdx !== idx;
+		});
+		this.setState({
+			barcodes: newBarcodeList
+		});
+	};
+
 	render() {
 		return (
 			<div className="app">
@@ -136,6 +146,7 @@ class App extends Component {
 									barcodes={this.state.barcodes}
 									deviceTime={this.state.deviceTime}
 									deviceInfo={this.state.deviceInfo}
+									onConfirmedDelete={this.handleDeleteBarcode}
 								/>
 							) : (
 								<ContentLogin {...props} onAuthenticate={this.authenticate} />

@@ -1,0 +1,57 @@
+.portal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.8);
+	z-index: 101;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.portal .portal-body {
+	text-align: center;
+	padding: 15px 15px 5px 15px;
+}
+
+.portal .delete-title {
+	font-weight: 500;
+	font-size: 1.2rem;
+	margin-bottom: 10px;
+}
+
+.portal .delete-id {
+	font-size: 1.5rem;
+	font-weight: 500;
+	margin-bottom: 20px;
+	margin-top: 3px;
+}
+
+.portal-actions {
+	display: flex;
+	border-top: 1px solid #e7e7e7;
+}
+
+.portal-action {
+	background-color: #fff;
+	transition: background-color 0.3s ease;
+	border-radius: 2px;
+	display: inline-block;
+	text-transform: uppercase;
+	font-size: 1.1rem;
+	font-weight: 500;
+	width: 50%;
+	text-align: center;
+	padding: 10px 0;
+	cursor: pointer;
+}
+
+.portal-action:hover {
+	background-color: #e7e7e7;
+}
+
+.portal-action:first-child {
+	border-right: 1px solid #e7e7e7;
+}
