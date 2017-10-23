@@ -8,6 +8,7 @@ import "../styles/data.css";
 import ScanListItem from "./ScanListItem";
 import DeleteItemPortal from "./DeleteItemPortal";
 import AddItemPortal from "./AddItemPortal";
+import ActionButton from "./ActionButton";
 
 class ContentData extends Component {
 	state = {
@@ -85,6 +86,7 @@ class ContentData extends Component {
 	render() {
 		return (
 			<div className="container content-data">
+				<ActionButton icon="file_upload" cb={this.props.onUploadData} />
 				<AlertContainer ref={a => (this.msg = a)} {...alertOptions} />
 				<div className="content-scans-list">
 					<div className="pre-card-section-title">

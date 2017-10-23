@@ -122,6 +122,12 @@ class App extends Component {
 		});
 	};
 
+	// Upload Device Data
+	handleUploadCurrentData = () => {
+		console.log("uploading...");
+		console.log(this.state.barcodes);
+	};
+
 	render() {
 		return (
 			<div className="app">
@@ -157,6 +163,7 @@ class App extends Component {
 									deviceInfo={this.state.deviceInfo}
 									onConfirmedDelete={this.handleDeleteBarcode}
 									onConfirmAdd={this.handleAddBarcode}
+									onUploadData={this.handleUploadCurrentData}
 								/>
 							) : (
 								<ContentLogin {...props} onAuthenticate={this.authenticate} />
