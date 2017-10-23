@@ -113,6 +113,15 @@ class App extends Component {
 		});
 	};
 
+	// Adding new scan confirmed
+	handleAddBarcode = (idx, scan) => {
+		const firstBarcodes = this.state.barcodes.slice(0, idx + 1);
+		const lastBarcodes = this.state.barcodes.slice(idx + 1);
+		this.setState({
+			barcodes: [...firstBarcodes, scan, ...lastBarcodes]
+		});
+	};
+
 	render() {
 		return (
 			<div className="app">
@@ -147,6 +156,7 @@ class App extends Component {
 									deviceTime={this.state.deviceTime}
 									deviceInfo={this.state.deviceInfo}
 									onConfirmedDelete={this.handleDeleteBarcode}
+									onConfirmAdd={this.handleAddBarcode}
 								/>
 							) : (
 								<ContentLogin {...props} onAuthenticate={this.authenticate} />

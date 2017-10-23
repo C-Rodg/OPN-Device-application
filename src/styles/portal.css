@@ -11,12 +11,16 @@
 	align-items: center;
 }
 
+.portal .card {
+	min-width: 300px;
+}
+
 .portal .portal-body {
 	text-align: center;
 	padding: 15px 15px 5px 15px;
 }
 
-.portal .delete-title {
+.portal-title {
 	font-weight: 500;
 	font-size: 1.2rem;
 	margin-bottom: 10px;
@@ -54,4 +58,8 @@
 
 .portal-action:first-child {
 	border-right: 1px solid #e7e7e7;
+}
+
+.portal .add-content {
+	margin: 15px 0 25px 0;
 }

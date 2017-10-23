@@ -7,7 +7,7 @@ const DeleteItemPortal = ({ onCancel, onConfirmDelete, scan }) => {
 			<div className="portal delete-item-portal">
 				<div className="card">
 					<div className="portal-body">
-						<div className="delete-title">
+						<div className="portal-title">
 							Are you sure you want to delete this scan?
 						</div>
 						<div className="delete-content">

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import AlertContainer from "react-alert";
+import moment from "moment";
 
+import { quickDateFormat } from "../utils/dateFormats";
 import { alertOptions } from "../utils/alertOptions";
 import "../styles/data.css";
 import ScanListItem from "./ScanListItem";
@@ -42,8 +44,22 @@ class ContentData extends Component {
 	};
 
 	// Addition of scan confirmed
-	handleConfirmAdd = () => {
-		console.log("adding in scan...");
+	handleConfirmAdd = data => {
+		if (!data) {
+			this.setState({ isShowingAddPortal: false, editPosition: null }, () => {
+				this.msg.error("Unable to insert blank scan data..");
+			});
+			return false;
+		}
+		const scan = {
+			data,
+			time: moment().format(quickDateFormat),
+			type: "MANUAL"
+		};
+		this.props.onConfirmAdd(this.state.editPosition, scan);
+		this.setState({ isShowingAddPortal: false, editPosition: null }, () => {
+			this.msg.success("New scan added!");
+		});
 	};
 
 	// Render scan list items
@@ -79,6 +95,8 @@ class ContentData extends Component {
 					</div>
 					<div className="scans-list-list card">{this.renderScans()}</div>
 				</div>
+				{this.props.barcodes &&
+					this.props.barcodes.length && <div>GRAPH GOES HERE</div>}
 
 				{this.state.isShowingDeletePortal && (
 					<DeleteItemPortal

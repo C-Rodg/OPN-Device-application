@@ -1,0 +1,17 @@
+.content-data {
+	display: flex;
+	flex-wrap: wrap-reverse;
+}
+
+.content-data .pre-card-section-title {
+	max-width: 500px;
+}
+
+.content-data .content-scans-list {
+	max-width: 500px;
+}
+
+.content-scans-list {
+	flex-grow: 1;
+	flex-basis: 500px;
+}
