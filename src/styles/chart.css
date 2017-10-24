@@ -1,0 +1,39 @@
+.chart {
+	margin: 0;
+}
+
+.chart figcaption {
+	font-weight: 500;
+	margin-bottom: 15px;
+	font-size: 21px;
+}
+
+.chart svg {
+	width: 100%;
+	padding-left: 2px;
+}
+
+.chart .bar {
+	fill: #888;
+	transition: fill 0.3s ease;
+	height: 21px;
+	cursor: pointer;
+}
+
+.chart .bar rect {
+	border-radius: 8px;
+}
+
+.chart .bar text {
+	fill: #666;
+	transition: fill 0.3s ease;
+	font-weight: 500;
+}
+
+.chart .bar:hover {
+	fill: #22635c;
+}
+
+.chart .bar:hover text {
+	fill: #22635c;
+}

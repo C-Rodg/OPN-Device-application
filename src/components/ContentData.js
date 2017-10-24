@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import AlertContainer from "react-alert";
 import moment from "moment";
-import { LineChart } from "react-easy-chart";
 
 import { quickDateFormat } from "../utils/dateFormats";
 import { alertOptions } from "../utils/alertOptions";
@@ -10,6 +9,7 @@ import ScanListItem from "./ScanListItem";
 import DeleteItemPortal from "./DeleteItemPortal";
 import AddItemPortal from "./AddItemPortal";
 import ActionButton from "./ActionButton";
+import Chart from "./Chart";
 
 class ContentData extends Component {
 	state = {
@@ -84,11 +84,42 @@ class ContentData extends Component {
 		}
 	};
 
-	// Render Chart
+	// Render Chart - build counts, then pass down created data object
 	renderChart = () => {
+		const codesObject = {};
+		this.props.barcodes.forEach(code => {
+			const d = moment(code.time, quickDateFormat).format("YYYY-MM-DDTHH");
+			if (codesObject.hasOwnProperty(d)) {
+				codesObject[d] += 1;
+			} else {
+				codesObject[d] = 1;
+			}
+		});
+		const barcodeData = Object.keys(codesObject)
+			.map(k => {
+				return {
+					id: k,
+					total: codesObject[k],
+					time: moment(k, "YYYY-MM-DDTHH").format("h:00 a, MMM Do"),
+					percent: Math.floor(codesObject[k] / this.props.barcodes.length * 100)
+				};
+			})
+			.sort((a, b) => {
+				if (
+					moment(a.id, "YYYY-MM-DDTHH").isBefore(moment(b.id, "YYYY-MM-DDTHH"))
+				) {
+					return -1;
+				} else if (
+					moment(a.id, "YYYY-MM-DDTHH").isAfter(moment(b.id, "YYYY-MM-DDTHH"))
+				) {
+					return 1;
+				} else {
+					return 0;
+				}
+			});
 		return (
-			<div className="barcode-chart">
-				<LineChart />
+			<div className="card barcode-chart">
+				<Chart title="Scan Time Summary" data={barcodeData} />
 			</div>
 		);
 	};

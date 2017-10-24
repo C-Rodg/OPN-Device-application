@@ -8,16 +8,22 @@
 }
 
 .content-data .content-scans-list {
-	max-width: 500px;
+	max-width: 570px;
 }
 
 .content-scans-list {
 	flex-grow: 1;
-	flex-basis: 500px;
+	flex-basis: 570px;
 }
 
 .content-data .floating-action-button {
 	position: fixed;
 	bottom: 20px;
 	right: 20px;
+}
+
+.content-data .barcode-chart {
+	flex: 1 0 300px;
+	align-self: flex-end;
+	padding: 10px;
 }
