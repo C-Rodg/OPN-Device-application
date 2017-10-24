@@ -77,7 +77,7 @@ class ContentDevices extends Component {
 						<div className="devices-list-list">{this.renderOtherDevices()}</div>
 					</div>
 				</div>
-				<ActionButton icon="refresh" cb={this.getDevices} />
+				<ActionButton icon="refresh" cb={this.props.onRefreshDevices} />
 			</div>
 		);
 	}

@@ -14,7 +14,8 @@ import Nav from "./Nav";
 import {
 	e_bootupApplication,
 	e_closeConnection,
-	e_createConnection
+	e_createConnection,
+	e_refreshConnections
 } from "../services/electronServices";
 
 class App extends Component {
@@ -128,6 +129,30 @@ class App extends Component {
 		console.log(this.state.barcodes);
 	};
 
+	// Refresh Device List
+	handleRefreshDeviceList = () => {
+		e_refreshConnections()
+			.then(listResponse => {
+				let current = null;
+				for (let i = 0, j = listResponse.deviceList.length; i < j; i++) {
+					if (
+						listResponse.deviceList[i].comName ===
+						this.state.currentDevice.comName
+					) {
+						current = listResponse.deviceList[i];
+						break;
+					}
+				}
+				this.setState({
+					currentDevice: current,
+					deviceList: listResponse.deviceList
+				});
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	};
+
 	render() {
 		return (
 			<div className="app">
@@ -154,8 +179,7 @@ class App extends Component {
 						path="/data"
 						exact
 						render={props => {
-							// TESTING
-							return true || this.state.isAuthenticated ? (
+							return this.state.isAuthenticated ? (
 								<ContentData
 									{...props}
 									barcodes={this.state.barcodes}
@@ -181,6 +205,7 @@ class App extends Component {
 									deviceList={this.state.deviceList}
 									onCloseConnection={this.handleCloseConnection}
 									onCreateConnection={this.handleCreateConnection}
+									onRefreshDevices={this.handleRefreshDeviceList}
 								/>
 							);
 						}}

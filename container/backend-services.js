@@ -70,6 +70,27 @@ ipcMain.on("create-connection", (event, arg) => {
 	getDeviceInfo(arg.comName, event, "create-connection-response");
 });
 
+// EVENT - refresh devices
+ipcMain.on("refresh-connections", (event, arg) => {
+	// List all connected devices
+	Serialport.list((err, ports) => {
+		// Unable to get serial ports
+		if (err || !ports) {
+			event.sender.send(
+				"refresh-connections-response",
+				generateError("Unable to get serialport devices..")
+			);
+			return false;
+		}
+		// Get Device Info
+		deviceList = ports;
+		event.sender.send("refresh-connections-response", {
+			success: true,
+			deviceList
+		});
+	});
+});
+
 // Connect to device and respond to renderer
 const getDeviceInfo = (com, event, responseName) => {
 	// Basic commands

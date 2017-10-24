@@ -44,3 +44,17 @@ export const e_createConnection = device => {
 		});
 	});
 };
+
+// Refresh the device list
+export const e_refreshConnections = () => {
+	return new Promise((resolve, reject) => {
+		ipcRenderer.send("refresh-connections");
+		ipcRenderer.once("refresh-connections-response", (event, arg) => {
+			if (arg.error) {
+				reject(arg);
+			} else {
+				resolve(arg);
+			}
+		});
+	});
+};
