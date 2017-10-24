@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import AlertContainer from "react-alert";
 import moment from "moment";
+import { LineChart } from "react-easy-chart";
 
 import { quickDateFormat } from "../utils/dateFormats";
 import { alertOptions } from "../utils/alertOptions";
@@ -83,6 +84,15 @@ class ContentData extends Component {
 		}
 	};
 
+	// Render Chart
+	renderChart = () => {
+		return (
+			<div className="barcode-chart">
+				<LineChart />
+			</div>
+		);
+	};
+
 	render() {
 		return (
 			<div className="container content-data">
@@ -98,7 +108,8 @@ class ContentData extends Component {
 					<div className="scans-list-list card">{this.renderScans()}</div>
 				</div>
 				{this.props.barcodes &&
-					this.props.barcodes.length && <div>GRAPH GOES HERE</div>}
+					this.props.barcodes.length &&
+					this.renderChart()}
 
 				{this.state.isShowingDeletePortal && (
 					<DeleteItemPortal
