@@ -224,6 +224,8 @@ class App extends Component {
 									onRefreshDevices={this.handleRefreshDeviceList}
 									barcodes={this.state.barcodes}
 									onNotification={this.handleNotification}
+									deviceTime={this.state.deviceTime}
+									deviceInfo={this.state.deviceInfo}
 								/>
 							);
 						}}

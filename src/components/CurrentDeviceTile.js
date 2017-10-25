@@ -10,6 +10,12 @@ const CurrentDeviceTile = device => {
 			<div className="icon-card-hover close-icon" onClick={device.closeDevice}>
 				<i className="material-icons">close</i>
 			</div>
+			<div
+				className="icon-card-hover reset-time-icon"
+				onClick={device.resetTime}
+			>
+				<i className="material-icons">access_time</i>
+			</div>
 			<div className="device-row device-name">
 				<span className="device-header">Device Type:</span>
 				{isQuick ? " Quickscan" : " Other"}
@@ -21,6 +27,25 @@ const CurrentDeviceTile = device => {
 			<div className="device-row device-port">
 				<span className="device-header">Port:</span> {device.comName}
 			</div>
+			{isQuick && (
+				<div>
+					<div className="device-row device-port">
+						<span className="device-header">Device ID:</span> {device.deviceId}
+					</div>
+					<div className="device-row device-port">
+						<span className="device-header">Device Time:</span>{" "}
+						{device.deviceTime}
+					</div>
+					<div className="device-row device-port">
+						<span className="device-header">Time Connected:</span>{" "}
+						{device.currentTime}
+					</div>
+					<div className="device-row device-port">
+						<span className="device-header">Clock Drift:</span>{" "}
+						{device.clockDrift}
+					</div>
+				</div>
+			)}
 			<div className="device-row device-actions">
 				<div
 					className="device-action action-clear"

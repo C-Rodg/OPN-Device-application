@@ -3,7 +3,11 @@ import { Link } from "react-router-dom";
 import moment from "moment";
 
 import "../styles/summary.css";
-import { quickDateFormat, displayDateFormat } from "../utils/dateFormats";
+import {
+	quickDateFormat,
+	displayDateFormat,
+	getClockDrift
+} from "../utils/dateFormats";
 
 const tooMuchTimeDrift = 300;
 
@@ -102,34 +106,7 @@ class ContentSummary extends Component {
 		if (!this.props.deviceTime.clockDrift) {
 			return "-Unknown Device Time-";
 		}
-		let secs = parseInt(this.props.deviceTime.clockDrift, 10);
-		if (secs === 0) {
-			return "No clock drift...";
-		}
-		const days = Math.floor(secs / (3600 * 24));
-		secs -= days * 3600 * 24;
-		const hrs = Math.floor(secs / 3600);
-		secs -= hrs * 3600;
-		const mins = Math.floor(secs / 60);
-		secs -= mins * 60;
-		let timeArr = [];
-		if (days) {
-			let str = days !== 1 ? `${days} days` : "1 day";
-			timeArr.push(str);
-		}
-		if (hrs) {
-			let str = hrs !== 1 ? `${hrs} hours` : "1 hour";
-			timeArr.push(str);
-		}
-		if (mins) {
-			let str = mins !== 1 ? `${mins} minutes` : "1 minute";
-			timeArr.push(str);
-		}
-		if (secs) {
-			let str = secs !== 1 ? `${secs} seconds` : "1 second";
-			timeArr.push(str);
-		}
-		return timeArr.join(", ");
+		return getClockDrift(this.props.deviceTime.clockDrift);
 	};
 
 	render() {

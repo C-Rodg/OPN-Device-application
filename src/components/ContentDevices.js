@@ -1,10 +1,17 @@
 import React, { Component } from "react";
+import moment from "moment";
 
 import "../styles/devices.css";
 import ActionButton from "./ActionButton";
 import OtherDeviceTile from "./OtherDeviceTile";
 import CurrentDeviceTile from "./CurrentDeviceTile";
 import ClearDevicePortal from "./ClearDevicePortal";
+
+import {
+	getClockDrift,
+	displayDateFormat,
+	quickDateFormat
+} from "../utils/dateFormats";
 
 class ContentDevices extends Component {
 	state = {
@@ -52,8 +59,24 @@ class ContentDevices extends Component {
 				closeDevice={this.props.onCloseConnection}
 				clearDevice={this.handleClearCurrentClick}
 				uploadDevice={this.handleUploadCurrentClick}
+				resetTime={this.handleResetTimeClick}
+				deviceId={parseInt(this.props.deviceInfo.device)}
+				currentTime={moment(
+					this.props.deviceTime.currentTime,
+					quickDateFormat
+				).format(displayDateFormat)}
+				deviceTime={moment(
+					this.props.deviceTime.deviceTime,
+					quickDateFormat
+				).format(displayDateFormat)}
+				clockDrift={getClockDrift(this.props.deviceTime.clockDrift)}
 			/>
 		);
+	};
+
+	// Reset device time
+	handleResetTimeClick = () => {
+		// handle reset time...
 	};
 
 	// Upload scans from current device
@@ -95,6 +118,7 @@ class ContentDevices extends Component {
 
 	// Render component
 	render() {
+		console.log(this.props);
 		return (
 			<div className="container content-devices">
 				<div className="content-devices-list">
