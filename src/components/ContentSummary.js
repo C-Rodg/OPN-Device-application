@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import AlertContainer from "react-alert";
 import { Link } from "react-router-dom";
 import moment from "moment";
 
 import "../styles/summary.css";
-import { alertOptions } from "../utils/alertOptions";
 import { quickDateFormat, displayDateFormat } from "../utils/dateFormats";
 
 const tooMuchTimeDrift = 300;
@@ -17,7 +15,11 @@ class ContentSummary extends Component {
 	componentDidMount() {
 		if (!this.state.timeDriftError && this.props.deviceTime) {
 			if (parseInt(this.props.deviceTime.clockDrift, 10) > tooMuchTimeDrift) {
-				this.msg.info("The device time and current time seem to be way off..");
+				this.props.onNotification({
+					type: "info",
+					message: "The device time and current time seem to be way off..",
+					isShort: false
+				});
 				this.setState({ timeDriftError: true });
 			}
 		}
@@ -26,7 +28,11 @@ class ContentSummary extends Component {
 	componentWillReceiveProps(nextProps) {
 		if (!this.state.timeDriftError) {
 			if (parseInt(nextProps.deviceTime.clockDrift, 10) > tooMuchTimeDrift) {
-				this.msg.info("The device time and current time seem to be way off..");
+				this.props.onNotification({
+					type: "info",
+					message: "The device time and current time seem to be way off..",
+					isShort: false
+				});
 				this.setState({ timeDriftError: true });
 			}
 		}
@@ -129,7 +135,6 @@ class ContentSummary extends Component {
 	render() {
 		return (
 			<div className="container content-summary">
-				<AlertContainer ref={a => (this.msg = a)} {...alertOptions} />
 				<div className="top-row">
 					<div className="card sum-total">
 						<div className="sum-total-wrapper">

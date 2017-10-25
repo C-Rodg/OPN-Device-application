@@ -2,18 +2,23 @@ import React from "react";
 import { Portal } from "react-portal";
 import "../styles/portal.css";
 
-const DeleteItemPortal = ({ onCancel, onConfirmDelete, scan }) => {
+const ClearDevicePortal = ({ onCancel, onConfirmClear, scanCount }) => {
 	return (
 		<Portal>
 			<div className="portal delete-item-portal">
 				<div className="card">
 					<div className="portal-body">
 						<div className="portal-title">
-							Are you sure you want to delete this scan?
+							Are you sure you want to clear ALL device data?
 						</div>
 						<div className="delete-content">
-							<div className="delete-id-title">Scan Data:</div>
-							<div className="delete-id">{scan.data}</div>
+							<div className="delete-id-title">
+								This action cannot be undone.
+							</div>
+							<div className="delete-id">
+								Clearing{" "}
+								{scanCount === 1 ? `${scanCount} scan.` : `${scanCount} scans.`}
+							</div>
 						</div>
 					</div>
 
@@ -23,7 +28,7 @@ const DeleteItemPortal = ({ onCancel, onConfirmDelete, scan }) => {
 						</div>
 						<div
 							className="portal-confirm portal-action"
-							onClick={onConfirmDelete}
+							onClick={onConfirmClear}
 						>
 							Delete
 						</div>
@@ -34,4 +39,4 @@ const DeleteItemPortal = ({ onCancel, onConfirmDelete, scan }) => {
 	);
 };
 
-export default DeleteItemPortal;
+export default ClearDevicePortal;

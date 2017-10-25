@@ -4,8 +4,13 @@ import "../styles/devices.css";
 import ActionButton from "./ActionButton";
 import OtherDeviceTile from "./OtherDeviceTile";
 import CurrentDeviceTile from "./CurrentDeviceTile";
+import ClearDevicePortal from "./ClearDevicePortal";
 
 class ContentDevices extends Component {
+	state = {
+		isShowingClearPortal: false
+	};
+
 	// Render other devices
 	renderOtherDevices = () => {
 		if (this.props.deviceList.length === 0) {
@@ -59,6 +64,33 @@ class ContentDevices extends Component {
 	// Clear scans from current device
 	handleClearCurrentClick = () => {
 		// handle clear device
+		this.setState({
+			isShowingClearPortal: true
+		});
+	};
+
+	// Cancel the Clear modal
+	handleCloseClearModal = () => {
+		this.setState({
+			isShowingClearPortal: false
+		});
+	};
+
+	// Clear device confirmed
+	handleConfirmedClear = () => {
+		// TODO: CLEAR DEVICE
+		this.setState(
+			{
+				isShowingClearPortal: false
+			},
+			() => {
+				this.props.onNotification({
+					type: "success",
+					message: "Successfully cleared device!",
+					isShort: false
+				});
+			}
+		);
 	};
 
 	// Render component
@@ -78,6 +110,13 @@ class ContentDevices extends Component {
 					</div>
 				</div>
 				<ActionButton icon="refresh" cb={this.props.onRefreshDevices} />
+				{this.state.isShowingClearPortal && (
+					<ClearDevicePortal
+						scanCount={this.props.barcodes.length}
+						onConfirmClear={this.handleConfirmedClear}
+						onCancel={this.handleCloseClearModal}
+					/>
+				)}
 			</div>
 		);
 	}

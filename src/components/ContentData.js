@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import AlertContainer from "react-alert";
 import moment from "moment";
 
 import { quickDateFormat } from "../utils/dateFormats";
-import { alertOptions, shortAlert } from "../utils/alertOptions";
 import "../styles/data.css";
 import ScanListItem from "./ScanListItem";
 import DeleteItemPortal from "./DeleteItemPortal";
@@ -41,7 +39,11 @@ class ContentData extends Component {
 	handleConfirmDelete = () => {
 		this.props.onConfirmedDelete(this.state.editPosition);
 		this.setState({ isShowingDeletePortal: false, editPosition: null }, () => {
-			this.msg.success("Successfully removed scan!", shortAlert);
+			this.props.onNotification({
+				type: "success",
+				message: "Successfully removed scan!",
+				isShort: true
+			});
 		});
 	};
 
@@ -49,7 +51,11 @@ class ContentData extends Component {
 	handleConfirmAdd = data => {
 		if (!data) {
 			this.setState({ isShowingAddPortal: false, editPosition: null }, () => {
-				this.msg.error("Unable to insert blank scan data..", shortAlert);
+				this.props.onNotification({
+					type: "error",
+					message: "Unable to insert blank scan data..",
+					isShort: true
+				});
 			});
 			return false;
 		}
@@ -60,7 +66,11 @@ class ContentData extends Component {
 		};
 		this.props.onConfirmAdd(this.state.editPosition, scan);
 		this.setState({ isShowingAddPortal: false, editPosition: null }, () => {
-			this.msg.success("New scan added!", shortAlert);
+			this.props.onNotification({
+				type: "success",
+				message: "New scan added!",
+				isShort: true
+			});
 		});
 	};
 
@@ -128,7 +138,6 @@ class ContentData extends Component {
 		return (
 			<div className="container content-data">
 				<ActionButton icon="file_upload" cb={this.props.onUploadData} />
-				<AlertContainer ref={a => (this.msg = a)} {...alertOptions} />
 				<div className="content-scans-list">
 					<div className="pre-card-section-title">
 						{this.props.barcodes && this.props.barcodes.length

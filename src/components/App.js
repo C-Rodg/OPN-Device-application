@@ -161,6 +161,11 @@ class App extends Component {
 			});
 	};
 
+	// Notification system
+	handleNotification = msgObj => {
+		this.msg[msgObj.type](msgObj.message, msgObj.isShort ? shortAlert : {});
+	};
+
 	render() {
 		return (
 			<div className="app">
@@ -179,6 +184,7 @@ class App extends Component {
 									deviceInfo={this.state.deviceInfo}
 									deviceTime={this.state.deviceTime}
 									barcodes={this.state.barcodes}
+									onNotification={this.handleNotification}
 								/>
 							);
 						}}
@@ -197,6 +203,7 @@ class App extends Component {
 									onConfirmedDelete={this.handleDeleteBarcode}
 									onConfirmAdd={this.handleAddBarcode}
 									onUploadData={this.handleUploadCurrentData}
+									onNotification={this.handleNotification}
 								/>
 							) : (
 								<ContentLogin {...props} onAuthenticate={this.authenticate} />
@@ -215,6 +222,8 @@ class App extends Component {
 									onCloseConnection={this.handleCloseConnection}
 									onCreateConnection={this.handleCreateConnection}
 									onRefreshDevices={this.handleRefreshDeviceList}
+									barcodes={this.state.barcodes}
+									onNotification={this.handleNotification}
 								/>
 							);
 						}}
