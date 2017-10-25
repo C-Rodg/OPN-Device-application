@@ -104,7 +104,7 @@ class ContentSummary extends Component {
 	// Calculate Clock Drift
 	calculateClockDrift = () => {
 		if (!this.props.deviceTime.clockDrift) {
-			return "-Unknown Device Time-";
+			return "-Unknown Clock Drift-";
 		}
 		return getClockDrift(this.props.deviceTime.clockDrift);
 	};

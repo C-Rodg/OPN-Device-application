@@ -6,6 +6,7 @@ import ActionButton from "./ActionButton";
 import OtherDeviceTile from "./OtherDeviceTile";
 import CurrentDeviceTile from "./CurrentDeviceTile";
 import ClearDevicePortal from "./ClearDevicePortal";
+import ResetTimePortal from "./ResetTimePortal";
 
 import {
 	getClockDrift,
@@ -15,7 +16,8 @@ import {
 
 class ContentDevices extends Component {
 	state = {
-		isShowingClearPortal: false
+		isShowingClearPortal: false,
+		isShowingResetTimePortal: false
 	};
 
 	// Render other devices
@@ -77,6 +79,16 @@ class ContentDevices extends Component {
 	// Reset device time
 	handleResetTimeClick = () => {
 		// handle reset time...
+		this.setState({
+			isShowingResetTimePortal: true
+		});
+	};
+
+	// Reset device time confirmed
+	handleResetTimeConfirmed = () => {
+		this.setState({
+			isShowingResetTimePortal: false
+		});
 	};
 
 	// Upload scans from current device
@@ -93,9 +105,10 @@ class ContentDevices extends Component {
 	};
 
 	// Cancel the Clear modal
-	handleCloseClearModal = () => {
+	handleCloseModals = () => {
 		this.setState({
-			isShowingClearPortal: false
+			isShowingClearPortal: false,
+			isShowingResetTimePortal: false
 		});
 	};
 
@@ -118,7 +131,6 @@ class ContentDevices extends Component {
 
 	// Render component
 	render() {
-		console.log(this.props);
 		return (
 			<div className="container content-devices">
 				<div className="content-devices-list">
@@ -138,7 +150,13 @@ class ContentDevices extends Component {
 					<ClearDevicePortal
 						scanCount={this.props.barcodes.length}
 						onConfirmClear={this.handleConfirmedClear}
-						onCancel={this.handleCloseClearModal}
+						onCancel={this.handleCloseModals}
+					/>
+				)}
+				{this.state.isShowingResetTimePortal && (
+					<ResetTimePortal
+						onConfirmReset={this.handleResetTimeConfirmed}
+						onCancel={this.handleCloseModals}
 					/>
 				)}
 			</div>
