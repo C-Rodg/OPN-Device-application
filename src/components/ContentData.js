@@ -3,7 +3,7 @@ import AlertContainer from "react-alert";
 import moment from "moment";
 
 import { quickDateFormat } from "../utils/dateFormats";
-import { alertOptions } from "../utils/alertOptions";
+import { alertOptions, shortAlert } from "../utils/alertOptions";
 import "../styles/data.css";
 import ScanListItem from "./ScanListItem";
 import DeleteItemPortal from "./DeleteItemPortal";
@@ -41,7 +41,7 @@ class ContentData extends Component {
 	handleConfirmDelete = () => {
 		this.props.onConfirmedDelete(this.state.editPosition);
 		this.setState({ isShowingDeletePortal: false, editPosition: null }, () => {
-			this.msg.success("Successfully removed scan!");
+			this.msg.success("Successfully removed scan!", shortAlert);
 		});
 	};
 
@@ -49,7 +49,7 @@ class ContentData extends Component {
 	handleConfirmAdd = data => {
 		if (!data) {
 			this.setState({ isShowingAddPortal: false, editPosition: null }, () => {
-				this.msg.error("Unable to insert blank scan data..");
+				this.msg.error("Unable to insert blank scan data..", shortAlert);
 			});
 			return false;
 		}
@@ -60,7 +60,7 @@ class ContentData extends Component {
 		};
 		this.props.onConfirmAdd(this.state.editPosition, scan);
 		this.setState({ isShowingAddPortal: false, editPosition: null }, () => {
-			this.msg.success("New scan added!");
+			this.msg.success("New scan added!", shortAlert);
 		});
 	};
 

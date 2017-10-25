@@ -3,3 +3,7 @@ export const alertOptions = {
 	theme: "dark",
 	time: 0
 };
+
+export const shortAlert = {
+	time: 5000
+};

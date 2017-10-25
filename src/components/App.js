@@ -1,6 +1,7 @@
 // Imports
 import React, { Component } from "react";
 import { Route, Redirect } from "react-router-dom";
+import AlertContainer from "react-alert";
 
 // Components
 import "../styles/default.css";
@@ -9,6 +10,7 @@ import ContentDevices from "./ContentDevices";
 import ContentSummary from "./ContentSummary";
 import ContentLogin from "./ContentLogin";
 import Nav from "./Nav";
+import { alertOptions, shortAlert } from "../utils/alertOptions";
 
 // Services
 import {
@@ -143,19 +145,26 @@ class App extends Component {
 						break;
 					}
 				}
-				this.setState({
-					currentDevice: current,
-					deviceList: listResponse.deviceList
-				});
+				this.setState(
+					{
+						currentDevice: current,
+						deviceList: listResponse.deviceList
+					},
+					() => {
+						this.msg.success("Refreshed device list!", shortAlert);
+					}
+				);
 			})
 			.catch(err => {
 				console.log(err);
+				this.msg.error("Unable to refresh device list..", shortAlert);
 			});
 	};
 
 	render() {
 		return (
 			<div className="app">
+				<AlertContainer ref={a => (this.msg = a)} {...alertOptions} />
 				<Nav />
 				<main>
 					<Route
