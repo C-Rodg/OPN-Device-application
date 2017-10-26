@@ -83,11 +83,90 @@ ipcMain.on("refresh-connections", (event, arg) => {
 			return false;
 		}
 		// Get Device Info
+		console.log("Refreshed devices");
 		deviceList = ports;
 		event.sender.send("refresh-connections-response", {
 			success: true,
 			deviceList
 		});
+	});
+});
+
+// EVENT - clear device
+ipcMain.on("clear-device", (event, arg) => {
+	// Basic commands
+	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device
+	const clearCodes = new Buffer([0x02, 0x02, 0x00, 0x9f, 0x2e]); // Clear existing codes
+
+	// -- Should never have an open port --
+	// Port is already open
+	// if (port && port.isOpen && port.path === arg.comName) {
+	// 	port.write(wake);
+	// 	return false;
+	// }
+	// Create new port
+	port = new Serialport(arg.comName, {
+		baudRate: 9600,
+		dataBits: 8,
+		parity: "odd",
+		stopBits: 1,
+		parser: Serialport.parsers.raw
+	});
+
+	// On Port 'error'
+	port.on("error", err => {
+		console.log(err);
+	});
+
+	// On Port 'open'
+	port.on("open", err => {
+		console.log("PORT OPENED - for clearing");
+
+		if (err) {
+			console.log(err.message);
+			event.sender.send("clear-device-response", generateError(err.message));
+		}
+
+		// On Port 'data'
+		port.on("data", data => {
+			const offset = parseInt(data[data.length - 3]);
+
+			if (data.length === 23 && offset === 0) {
+				// Handle Wake command
+				console.log("DATA -- Device awake for clearing");
+				// Clear device
+				port.write(clearCodes);
+			} else if (data.length === 5 && offset === 0) {
+				// Handle Clear Data command
+				console.log("DATA -- Clear/Powered Down");
+
+				if (port && port.isOpen) {
+					port.close(err => {
+						if (err) {
+							event.sender.send("clear-device-response", generateError(err));
+							return false;
+						}
+						console.log("DATA CLEARED - PORT CLOSED");
+						port = null;
+						event.sender.send("clear-device-response", {
+							success: true,
+							barcodes: []
+						});
+					});
+				} else {
+					port = null;
+					event.sender.send("clear-device-response", {
+						success: true,
+						barcodes: []
+					});
+				}
+			} else {
+				// Other command called..?
+				console.log("DATA -- Other command - should not be called.");
+			}
+		});
+
+		port.write(wake);
 	});
 });
 
@@ -100,12 +179,13 @@ const getDeviceInfo = (com, event, responseName) => {
 	const clearCodes = new Buffer([0x02, 0x02, 0x00, 0x9f, 0x2e]); // Clear existing codes
 	const powerDown = new Buffer([0x05, 0x02, 0x00, 0x5e, 0x9f]); // Shut the device down
 
+	// --- NOT NEEDED?? --
 	// Port is already open
-	if (port && port.isOpen && port.path === com) {
-		console.log("port is already open.."); // write to wake up?
-		port.write(wake);
-		return false;
-	}
+	// if (port && port.isOpen && port.path === com) {
+	// 	console.log("port is already open.."); // write to wake up?
+	// 	port.write(wake);
+	// 	return false;
+	// }
 
 	// Create new port
 	port = new Serialport(com, {
@@ -145,7 +225,7 @@ const getDeviceInfo = (com, event, responseName) => {
 
 	// On Port 'open'
 	port.on("open", err => {
-		console.log("opened port!");
+		console.log("PORT OPENED - for device info");
 
 		if (err) {
 			console.log(err.message);
@@ -182,10 +262,6 @@ const getDeviceInfo = (com, event, responseName) => {
 				// Determine difference
 				const diff = now.getTime() - deviceTime.getTime();
 				const secondsBetweenDates = Math.abs(diff / 1000);
-
-				// TODO: alert if sufficiently large difference between device and local times? -- alert in app?
-
-				// TODO: RESET CLOCK AND SEE IF CORRECT
 
 				// Assign time values to response object
 				responseObject.time.clockDrift = secondsBetweenDates;
@@ -250,7 +326,20 @@ const getDeviceInfo = (com, event, responseName) => {
 						}
 					}
 					responseObject.barcodes = detectedScans;
-					event.sender.send(responseName, responseObject);
+					if (port && port.isOpen) {
+						port.close(err => {
+							if (err) {
+								event.sender.send(responseName, generateError(err));
+								return false;
+							}
+							console.log("GOT DEVICE INFO - PORT CLOSED");
+							port = null;
+							event.sender.send(responseName, responseObject);
+						});
+					} else {
+						port = null;
+						event.sender.send(responseName, responseObject);
+					}
 				}
 			}
 		});

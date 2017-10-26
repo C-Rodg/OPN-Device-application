@@ -17,7 +17,8 @@ import {
 	e_bootupApplication,
 	e_closeConnection,
 	e_createConnection,
-	e_refreshConnections
+	e_refreshConnections,
+	e_clearDevice
 } from "../services/electronServices";
 
 class App extends Component {
@@ -136,13 +137,15 @@ class App extends Component {
 		e_refreshConnections()
 			.then(listResponse => {
 				let current = null;
-				for (let i = 0, j = listResponse.deviceList.length; i < j; i++) {
-					if (
-						listResponse.deviceList[i].comName ===
-						this.state.currentDevice.comName
-					) {
-						current = listResponse.deviceList[i];
-						break;
+				if (this.state.currentDevice) {
+					for (let i = 0, j = listResponse.deviceList.length; i < j; i++) {
+						if (
+							listResponse.deviceList[i].comName ===
+							this.state.currentDevice.comName
+						) {
+							current = listResponse.deviceList[i];
+							break;
+						}
 					}
 				}
 				this.setState(
@@ -164,6 +167,27 @@ class App extends Component {
 	// Notification system
 	handleNotification = msgObj => {
 		this.msg[msgObj.type](msgObj.message, msgObj.isShort ? shortAlert : {});
+	};
+
+	// Clear the device
+	handleConfirmedClear = () => {
+		e_clearDevice(this.state.currentDevice.comName)
+			.then(data => {
+				this.handleNotification({
+					type: "success",
+					message: "Successfully cleared device!",
+					isShort: false
+				});
+				this.setState({ barcodes: data.barcodes });
+			})
+			.catch(err => {
+				console.log(err);
+				this.handleNotification({
+					type: "error",
+					message: "Unable to clear this device..",
+					isShort: true
+				});
+			});
 	};
 
 	render() {
@@ -226,6 +250,7 @@ class App extends Component {
 									onNotification={this.handleNotification}
 									deviceTime={this.state.deviceTime}
 									deviceInfo={this.state.deviceInfo}
+									onConfirmClearDevice={this.handleConfirmedClear}
 								/>
 							);
 						}}

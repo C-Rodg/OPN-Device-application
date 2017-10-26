@@ -114,17 +114,12 @@ class ContentDevices extends Component {
 
 	// Clear device confirmed
 	handleConfirmedClear = () => {
-		// TODO: CLEAR DEVICE
 		this.setState(
 			{
 				isShowingClearPortal: false
 			},
 			() => {
-				this.props.onNotification({
-					type: "success",
-					message: "Successfully cleared device!",
-					isShort: false
-				});
+				this.props.onConfirmClearDevice();
 			}
 		);
 	};
