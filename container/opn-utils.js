@@ -101,7 +101,7 @@ const resetTime = () => {
 		})
 		.join("");
 	const resetTime = new Buffer([0x09, 0x02, 0x06, mappedTime, 0x00]);
-	//do the joing stuff.. // 0x5e, 0x9f]);
+	//do the joining stuff.. // 0x5e, 0x9f]);
 	return resetTime;
 };
 

@@ -86,9 +86,14 @@ class ContentDevices extends Component {
 
 	// Reset device time confirmed
 	handleResetTimeConfirmed = () => {
-		this.setState({
-			isShowingResetTimePortal: false
-		});
+		this.setState(
+			{
+				isShowingResetTimePortal: false
+			},
+			() => {
+				this.props.onConfirmResetTime();
+			}
+		);
 	};
 
 	// Upload scans from current device

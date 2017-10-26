@@ -3,6 +3,9 @@ const electron = require("electron");
 let { remote } = electron;
 const { ipcRenderer } = electron;
 
+// Default timeout for requests to Electron wrapper
+const DEFAULT_TIMEOUT = 10000;
+
 // Bootup application
 export const e_bootupApplication = () => {
 	return new Promise((resolve, reject) => {
@@ -14,6 +17,7 @@ export const e_bootupApplication = () => {
 				resolve(arg);
 			}
 		});
+		setTimeout(reject, DEFAULT_TIMEOUT);
 	});
 };
 
@@ -28,6 +32,7 @@ export const e_closeConnection = () => {
 				resolve(arg);
 			}
 		});
+		setTimeout(reject, DEFAULT_TIMEOUT);
 	});
 };
 
@@ -42,6 +47,7 @@ export const e_createConnection = device => {
 				resolve(arg);
 			}
 		});
+		setTimeout(reject, DEFAULT_TIMEOUT);
 	});
 };
 
@@ -56,6 +62,7 @@ export const e_refreshConnections = () => {
 				resolve(arg);
 			}
 		});
+		setTimeout(reject, DEFAULT_TIMEOUT);
 	});
 };
 
@@ -70,5 +77,20 @@ export const e_clearDevice = comName => {
 				resolve(arg);
 			}
 		});
+		setTimeout(reject, DEFAULT_TIMEOUT);
+	});
+};
+
+export const e_resetDeviceTime = comName => {
+	return new Promise((resolve, reject) => {
+		ipcRenderer.send("reset-time", { comName });
+		ipcRenderer.once("reset-time-response", (event, arg) => {
+			if (arg.error) {
+				reject(arg);
+			} else {
+				resolve(arg);
+			}
+		});
+		setTimeout(reject, DEFAULT_TIMEOUT);
 	});
 };

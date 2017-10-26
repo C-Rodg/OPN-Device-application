@@ -19,7 +19,7 @@
 	border-top: 2px solid #333;
 }
 
-.scan-list-item::first-child {
+.scan-list-item:first-child {
 	border-top: 0;
 }
 

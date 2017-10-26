@@ -98,12 +98,6 @@ ipcMain.on("clear-device", (event, arg) => {
 	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device
 	const clearCodes = new Buffer([0x02, 0x02, 0x00, 0x9f, 0x2e]); // Clear existing codes
 
-	// -- Should never have an open port --
-	// Port is already open
-	// if (port && port.isOpen && port.path === arg.comName) {
-	// 	port.write(wake);
-	// 	return false;
-	// }
 	// Create new port
 	port = new Serialport(arg.comName, {
 		baudRate: 9600,
@@ -170,6 +164,148 @@ ipcMain.on("clear-device", (event, arg) => {
 	});
 });
 
+// Reset device time
+ipcMain.on("reset-time", (event, arg) => {
+	// Basic commands
+	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device - 1,2,0,159,222
+	const clock = new Buffer([0x0a, 0x02, 0x00, 0x5d, 0xaf]); // Get Time - 10,2,0,93,175
+
+	const setTime = new Buffer([0x05, 0x02, 0x00, 0x9e, 0x5e, 0x9f]); // 5, 2, 0, 158, 94, 159
+	// set clock: "\t\x02\x06'\x12\x11\x12\x07\x10\x00"   '\x97\xd7'
+	// horizontal tab, start of text, acknowledge + dates + null byte
+
+	//const otherSetTime = new Buffer([0x09, 0x02, 0x06, DATE HERE , 0x00])
+	const otherSetTime = new Buffer([
+		0x09, // correct
+		0x02, // correct
+		0x06, // correct
+		0x63,
+		0x63,
+		0x63,
+		0x63,
+		0x63,
+		0x63,
+		0x63,
+		0x63,
+		0x63,
+		0x63,
+		0x63,
+		0x63,
+		0x00 // correct
+	]);
+	// Create new port
+	port = new Serialport(arg.comName, {
+		baudRate: 9600,
+		dataBits: 8,
+		parity: "odd",
+		stopBits: 1,
+		parser: Serialport.parsers.raw
+	});
+
+	// On Port 'error'
+	port.on("error", err => {
+		console.log(err);
+	});
+
+	// Time object to return
+	const responseObject = {
+		time: {
+			deviceTime: "",
+			currentTime: "",
+			clockDrift: ""
+		}
+	};
+
+	port.on("open", err => {
+		console.log("PORT OPENED - for time reset");
+
+		if (err) {
+			console.log(err.message);
+			event.sender.send("reset-time-response", generateError(err.message));
+		}
+
+		// On Port 'data'
+		port.on("data", data => {
+			const offset = parseInt(data[data.length - 3]);
+			console.log(`Data is: ${data.length}, offset is: ${offset}`);
+			if (data.length === 23 && offset === 0) {
+				// Handle Wake command
+				console.log("DATA -- Device wake for time reset");
+
+				// Set Time Info
+				const now = new Date();
+				const year = now.getFullYear() - 2000;
+				const month = now.getMonth() + 1;
+				const day = now.getDate();
+				const hr = now.getHours();
+				const mins = now.getMinutes();
+				const secs = now.getSeconds();
+				const nowArr = [secs, mins, hr, day, month, year];
+				console.log(nowArr);
+				// const uArr = new Uint8Array(6);
+				// uArr[0] = secs;
+				// uArr[1] = mins;
+				// uArr[2] = hr;
+				// uArr[3] = day;
+				// uArr[4] = month;
+				// uArr[5] = year;
+				const uArr = new Uint8Array(10);
+				uArr[0] = 0x09;
+				uArr[1] = 0x02;
+				uArr[2] = 0x06;
+				uArr[3] = secs;
+				uArr[4] = mins;
+				uArr[5] = hr;
+				uArr[6] = day;
+				uArr[7] = month;
+				uArr[8] = year;
+				uArr[9] = 0x00;
+				console.log(uArr);
+				const resetTime = new Buffer(uArr);
+				port.write(setTime);
+			} else if (data.length === 12 && offset === 0) {
+				// Handle Get Time
+				console.log("DATA -- Get Time");
+
+				// Get all parts of the date
+				let s = data.slice(3, 4).toString();
+				s = s.codePointAt(0);
+				let min = data.slice(4, 5).toString();
+				min = min.codePointAt(0);
+				let hr = data.slice(5, 6).toString();
+				hr = hr.codePointAt(0);
+				let day = data.slice(6, 7).toString();
+				day = day.codePointAt(0);
+				let month = data.slice(7, 8).toString();
+				month = month.codePointAt(0);
+				let yr = data.slice(8, 9).toString();
+				yr = yr.codePointAt(0);
+				yr += 2000;
+
+				// Get current time vs. device time
+				const now = new Date();
+				const deviceTime = new Date(yr, month - 1, day, hr, min, s);
+
+				// Determine difference
+				const diff = now.getTime() - deviceTime.getTime();
+				const secondsBetweenDates = Math.abs(diff / 1000);
+
+				// Assign time values to response object
+				responseObject.time.clockDrift = secondsBetweenDates;
+				responseObject.time.currentTime = now.toJSON();
+				responseObject.time.deviceTime = now.toJSON();
+
+				// Get barcodes
+				port.write(getCodes);
+			} else {
+				console.log("DATA -- Other command - should not be called");
+			}
+		});
+
+		port.write(wake);
+	});
+});
+
 // Connect to device and respond to renderer
 const getDeviceInfo = (com, event, responseName) => {
 	// Basic commands
@@ -179,22 +315,19 @@ const getDeviceInfo = (com, event, responseName) => {
 	const clearCodes = new Buffer([0x02, 0x02, 0x00, 0x9f, 0x2e]); // Clear existing codes
 	const powerDown = new Buffer([0x05, 0x02, 0x00, 0x5e, 0x9f]); // Shut the device down
 
-	// --- NOT NEEDED?? --
-	// Port is already open
-	// if (port && port.isOpen && port.path === com) {
-	// 	console.log("port is already open.."); // write to wake up?
-	// 	port.write(wake);
-	// 	return false;
-	// }
-
-	// Create new port
-	port = new Serialport(com, {
-		baudRate: 9600,
-		dataBits: 8,
-		parity: "odd",
-		stopBits: 1,
-		parser: Serialport.parsers.raw
-	});
+	if (port && port.isOpen && port.comName === com) {
+		console.log("PORT IS ALREADY OPEN!!");
+	} else {
+		console.log("NEW PORT CREATED");
+		// Create new port
+		port = new Serialport(com, {
+			baudRate: 9600,
+			dataBits: 8,
+			parity: "odd",
+			stopBits: 1,
+			parser: Serialport.parsers.raw
+		});
+	}
 
 	// Object to return to renderer
 	const responseObject = {
@@ -214,9 +347,8 @@ const getDeviceInfo = (com, event, responseName) => {
 		barcodes: []
 	};
 
-	// Flags and initial settings -- reset these at some point?
-	let barcodeData = new Uint8Array(),
-		getCodesCount = 0;
+	// Barcode Data Typed Array
+	let barcodeData = new Uint8Array();
 
 	// On Port 'error'
 	port.on("error", err => {

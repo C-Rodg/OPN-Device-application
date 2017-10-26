@@ -18,7 +18,8 @@ import {
 	e_closeConnection,
 	e_createConnection,
 	e_refreshConnections,
-	e_clearDevice
+	e_clearDevice,
+	e_resetDeviceTime
 } from "../services/electronServices";
 
 class App extends Component {
@@ -190,6 +191,27 @@ class App extends Component {
 			});
 	};
 
+	// Reset the device time
+	handleResetTime = () => {
+		e_resetDeviceTime(this.state.currentDevice.comName)
+			.then(data => {
+				console.log(data);
+				this.handleNotification({
+					type: "success",
+					message: "Device time reset!",
+					isShort: false
+				});
+			})
+			.catch(err => {
+				console.log(err);
+				this.handleNotification({
+					type: "error",
+					message: "Unable to reset device time..",
+					isShort: true
+				});
+			});
+	};
+
 	render() {
 		return (
 			<div className="app">
@@ -251,6 +273,7 @@ class App extends Component {
 									deviceTime={this.state.deviceTime}
 									deviceInfo={this.state.deviceInfo}
 									onConfirmClearDevice={this.handleConfirmedClear}
+									onConfirmResetTime={this.handleResetTime}
 								/>
 							);
 						}}

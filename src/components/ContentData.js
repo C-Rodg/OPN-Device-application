@@ -141,14 +141,16 @@ class ContentData extends Component {
 				<div className="content-scans-list">
 					<div className="pre-card-section-title">
 						{this.props.barcodes && this.props.barcodes.length
-							? this.props.barcodes.length
-							: "0"}{" "}
-						Scans:
+							? `${this.props.barcodes.length} ${this.props.barcodes.length !==
+								1
+									? "Scans:"
+									: "Scan:"}`
+							: "No Scans.."}
 					</div>
 					<div className="scans-list-list card">{this.renderScans()}</div>
 				</div>
 				{this.props.barcodes &&
-					this.props.barcodes.length &&
+					this.props.barcodes.length > 0 &&
 					this.renderChart()}
 
 				{this.state.isShowingDeletePortal && (
