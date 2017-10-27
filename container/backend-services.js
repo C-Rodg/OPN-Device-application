@@ -179,18 +179,10 @@ ipcMain.on("reset-time", (event, arg) => {
 		0x09, // correct
 		0x02, // correct
 		0x06, // correct
-		0x63,
-		0x63,
-		0x63,
-		0x63,
-		0x63,
-		0x63,
-		0x63,
-		0x63,
-		0x63,
-		0x63,
-		0x63,
-		0x63,
+		0x07, // 7, 7, 7, 7
+		0x07,
+		0x07,
+		0x07,
 		0x00 // correct
 	]);
 	// Create new port
@@ -262,7 +254,7 @@ ipcMain.on("reset-time", (event, arg) => {
 				uArr[9] = 0x00;
 				console.log(uArr);
 				const resetTime = new Buffer(uArr);
-				port.write(setTime);
+				port.write(otherSetTime);
 			} else if (data.length === 12 && offset === 0) {
 				// Handle Get Time
 				console.log("DATA -- Get Time");

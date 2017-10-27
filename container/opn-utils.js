@@ -49,6 +49,14 @@ const symbologies = {
 	UNKNOWN: "UNKNOWN"
 };
 
+// HELPER - Create a Uint8Array based on two different Uint8Arrays
+const _appendBuffer = (buffer1, buffer2) => {
+	const temp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
+	temp.set(new Uint8Array(buffer1), 0);
+	temp.set(new Uint8Array(buffer2), buffer1.byteLength);
+	return temp;
+};
+
 // HELPER - Convert byteArray to long integer
 const byteArrayToLong = byteArray => {
 	let value = 0;
@@ -58,28 +66,20 @@ const byteArrayToLong = byteArray => {
 	return value;
 };
 
-// HELPER - Create a Uint8Array based on two different Uint8Arrays
-const _appendBuffer = (buffer1, buffer2) => {
-	const temp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
-	temp.set(new Uint8Array(buffer1), 0);
-	temp.set(new Uint8Array(buffer2), buffer1.byteLength);
-	return temp;
-};
-
 // HELPER - Extract packed timestamps
 const extractPackedTimestamp = (b1, b2, b3, b4, b) => {
 	let longDate = byteArrayToLong([b1, b2, b3, b4]);
-	const year = 2000 + parseInt(longDate & 0x3f);
+	const year = 2000 + parseInt(longDate & 0x3f); // & 63
 	longDate >>= 6;
-	const month = parseInt(longDate & 0x0f) - 1;
+	const month = parseInt(longDate & 0x0f) - 1; // & 15
 	longDate >>= 4;
-	const day = parseInt(longDate & 0x1f);
+	const day = parseInt(longDate & 0x1f); // & 31
 	longDate >>= 5;
-	const hour = parseInt(longDate & 0x1f);
+	const hour = parseInt(longDate & 0x1f); // & 31
 	longDate >>= 5;
-	const mins = parseInt(longDate & 0x3f);
+	const mins = parseInt(longDate & 0x3f); // & 63
 	longDate >>= 6;
-	const secs = parseInt(longDate & 0x3f);
+	const secs = parseInt(longDate & 0x3f); // & 63
 
 	const extractedDate = new Date(year, month, day, hour, mins, secs);
 	return extractedDate;
