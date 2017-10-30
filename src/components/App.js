@@ -201,6 +201,7 @@ class App extends Component {
 					message: "Device time reset!",
 					isShort: false
 				});
+				this.setState({ deviceTime: data.time });
 			})
 			.catch(err => {
 				console.log(err);
