@@ -1,3 +1,43 @@
+// Constructor for calculating symbol's CRC check
+function SymbolCrc16() {
+	this.crcTable = [];
+	const poly = 0xa001;
+	for (let byteIndex = 0; byteIndex < 256; byteIndex++) {
+		let crc = 0;
+		let byteNum = byteIndex;
+
+		for (let bitIndex = 0; bitIndex < 8; bitIndex++) {
+			if (((byteNum ^ crc) & 1) > 0) {
+				crc = (crc >> 1) ^ poly;
+			} else {
+				crc = crc >> 1;
+			}
+			byteNum = byteNum >> 1;
+		}
+		this.crcTable[byteIndex] = crc;
+	}
+}
+
+// Method for calculating HiByte & LoByte CRC checks
+SymbolCrc16.prototype.CalcSymbolCrc16 = function(
+	bytesToCheck,
+	numBytesToCheck
+) {
+	let calcValue = 0xffff;
+
+	for (let byteIndex = 0; byteIndex < numBytesToCheck; byteIndex++) {
+		calcValue =
+			this.crcTable[bytesToCheck[byteIndex] ^ (calcValue & 0xff)] ^
+			(calcValue >> 8);
+	}
+	calcValue = ~calcValue;
+
+	return {
+		HiByte: (calcValue & 0xff00) >> 8,
+		LoByte: calcValue & 0xff
+	};
+};
+
 // Mapping of OPN symbologies
 const symbologies = {
 	0x16: "Bookland",
@@ -105,7 +145,7 @@ const resetTime = () => {
 	return resetTime;
 };
 
+module.exports.SymbolCrc16 = SymbolCrc16;
 module.exports.symbologies = symbologies;
-//module.exports.byteArrayToLong = byteArrayToLong;
 module.exports._appendBuffer = _appendBuffer;
 module.exports.extractPackedTimestamp = extractPackedTimestamp;

@@ -170,21 +170,6 @@ ipcMain.on("reset-time", (event, arg) => {
 	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device - 1,2,0,159,222
 	const clock = new Buffer([0x0a, 0x02, 0x00, 0x5d, 0xaf]); // Get Time - 10,2,0,93,175
 
-	const setTime = new Buffer([0x05, 0x02, 0x00, 0x9e, 0x5e, 0x9f]); // 5, 2, 0, 158, 94, 159
-	// set clock: "\t\x02\x06'\x12\x11\x12\x07\x10\x00"   '\x97\xd7'
-	// horizontal tab, start of text, acknowledge + dates + null byte
-
-	//const otherSetTime = new Buffer([0x09, 0x02, 0x06, DATE HERE , 0x00])
-	const otherSetTime = new Buffer([
-		0x09, // correct
-		0x02, // correct
-		0x06, // correct
-		0x07, // 7, 7, 7, 7
-		0x07,
-		0x07,
-		0x07,
-		0x00 // correct
-	]);
 	// Create new port
 	port = new Serialport(arg.comName, {
 		baudRate: 9600,
@@ -233,28 +218,41 @@ ipcMain.on("reset-time", (event, arg) => {
 				const mins = now.getMinutes();
 				const secs = now.getSeconds();
 				const nowArr = [secs, mins, hr, day, month, year];
-				console.log(nowArr);
-				// const uArr = new Uint8Array(6);
-				// uArr[0] = secs;
-				// uArr[1] = mins;
-				// uArr[2] = hr;
-				// uArr[3] = day;
-				// uArr[4] = month;
-				// uArr[5] = year;
-				const uArr = new Uint8Array(10);
-				uArr[0] = 0x09;
-				uArr[1] = 0x02;
-				uArr[2] = 0x06;
-				uArr[3] = secs;
-				uArr[4] = mins;
-				uArr[5] = hr;
-				uArr[6] = day;
-				uArr[7] = month;
-				uArr[8] = year;
-				uArr[9] = 0x00;
-				console.log(uArr);
-				const resetTime = new Buffer(uArr);
-				port.write(otherSetTime);
+
+				const setTime = new Buffer([
+					0x09, // correct
+					0x02, // correct
+					0x06, // correct
+					0x07, // 7 Seconds
+					0x14, // 20 minutes
+					0x11, // 17 hours
+					0x19, // 25 days
+					0x0a, // 10 month
+					0x11, // 17 year
+					0x00 // correct
+				]);
+
+				const arr = [
+					0x09,
+					0x02,
+					0x06,
+					0x07,
+					0x14,
+					0x11,
+					0x19,
+					0x0a,
+					0x11,
+					0x00
+				];
+				var x = new opnUtils.SymbolCrc16();
+				var a = x.CalcSymbolCrc16(arr, 10);
+				console.log(a);
+				arr.push(a.HiByte, a.LoByte);
+				const testBuff = new Buffer(arr);
+
+				port.write(testBuff);
+				//const clock = new Buffer([0x0a, 0x02, 0x00, 0x5d, 0xaf]); // Get Time
+				//port.write(clock);
 			} else if (data.length === 12 && offset === 0) {
 				// Handle Get Time
 				console.log("DATA -- Get Time");
@@ -285,10 +283,10 @@ ipcMain.on("reset-time", (event, arg) => {
 				// Assign time values to response object
 				responseObject.time.clockDrift = secondsBetweenDates;
 				responseObject.time.currentTime = now.toJSON();
-				responseObject.time.deviceTime = now.toJSON();
-
+				responseObject.time.deviceTime = deviceTime.toJSON();
+				console.log(deviceTime.toJSON());
 				// Get barcodes
-				port.write(getCodes);
+				//port.write(getCodes);
 			} else {
 				console.log("DATA -- Other command - should not be called");
 			}
@@ -302,7 +300,7 @@ ipcMain.on("reset-time", (event, arg) => {
 const getDeviceInfo = (com, event, responseName) => {
 	// Basic commands
 	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device
-	const clock = new Buffer([0x0a, 0x02, 0x00, 0x5d, 0xaf]); // Check clock drift
+	const clock = new Buffer([0x0a, 0x02, 0x00, 0x5d, 0xaf]); // Get Time
 	const getCodes = new Buffer([0x07, 0x02, 0x00, 0x9e, 0x3e]); // Get Barcodes
 	const clearCodes = new Buffer([0x02, 0x02, 0x00, 0x9f, 0x2e]); // Clear existing codes
 	const powerDown = new Buffer([0x05, 0x02, 0x00, 0x5e, 0x9f]); // Shut the device down
@@ -390,7 +388,7 @@ const getDeviceInfo = (com, event, responseName) => {
 				// Assign time values to response object
 				responseObject.time.clockDrift = secondsBetweenDates;
 				responseObject.time.currentTime = now.toJSON();
-				responseObject.time.deviceTime = now.toJSON();
+				responseObject.time.deviceTime = deviceTime.toJSON();
 
 				// Get barcodes
 				port.write(getCodes);
