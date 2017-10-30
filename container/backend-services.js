@@ -167,17 +167,21 @@ ipcMain.on("clear-device", (event, arg) => {
 // Reset device time
 ipcMain.on("reset-time", (event, arg) => {
 	// Basic commands
-	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device - 1,2,0,159,222
-	const clock = new Buffer([0x0a, 0x02, 0x00, 0x5d, 0xaf]); // Get Time - 10,2,0,93,175
+	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device
+	const clock = new Buffer([0x0a, 0x02, 0x00, 0x5d, 0xaf]); // Get Time
 
-	// Create new port
-	port = new Serialport(arg.comName, {
-		baudRate: 9600,
-		dataBits: 8,
-		parity: "odd",
-		stopBits: 1,
-		parser: Serialport.parsers.raw
-	});
+	if (port && port.isOpen && port.comName === com) {
+		console.log("PORT IS ALREADY OPEN!!");
+	} else {
+		// Create new port
+		port = new Serialport(arg.comName, {
+			baudRate: 9600,
+			dataBits: 8,
+			parity: "odd",
+			stopBits: 1,
+			parser: Serialport.parsers.raw
+		});
+	}
 
 	// On Port 'error'
 	port.on("error", err => {
@@ -217,45 +221,29 @@ ipcMain.on("reset-time", (event, arg) => {
 				const hr = now.getHours();
 				const mins = now.getMinutes();
 				const secs = now.getSeconds();
-				const nowArr = [secs, mins, hr, day, month, year];
-
-				const setTime = new Buffer([
-					0x09, // correct
-					0x02, // correct
-					0x06, // correct
-					0x07, // 7 Seconds
-					0x14, // 20 minutes
-					0x11, // 17 hours
-					0x19, // 25 days
-					0x0a, // 10 month
-					0x11, // 17 year
-					0x00 // correct
-				]);
-
-				const arr = [
+				const nowArr = [
 					0x09,
 					0x02,
 					0x06,
-					0x07,
-					0x14,
-					0x11,
-					0x19,
-					0x0a,
-					0x11,
+					secs,
+					mins,
+					hr,
+					day,
+					month,
+					year,
 					0x00
 				];
-				var x = new opnUtils.SymbolCrc16();
-				var a = x.CalcSymbolCrc16(arr, 10);
-				console.log(a);
-				arr.push(a.HiByte, a.LoByte);
-				const testBuff = new Buffer(arr);
 
-				port.write(testBuff);
-				//const clock = new Buffer([0x0a, 0x02, 0x00, 0x5d, 0xaf]); // Get Time
-				//port.write(clock);
+				// Calculate CRC check for last two bytes
+				const SymbolClass = new opnUtils.SymbolCrc16();
+				const crcCheck = SymbolClass.CalcSymbolCrc16(nowArr, nowArr.length);
+				nowArr.push(crcCheck.HiByte, crcCheck.LoByte);
+				const setTimeBuffer = new Buffer(nowArr);
+
+				port.write(setTimeBuffer);
 			} else if (data.length === 12 && offset === 0) {
 				// Handle Get Time
-				console.log("DATA -- Get Time");
+				console.log("DATA -- time reset, now Get Time");
 
 				// Get all parts of the date
 				let s = data.slice(3, 4).toString();
@@ -284,9 +272,20 @@ ipcMain.on("reset-time", (event, arg) => {
 				responseObject.time.clockDrift = secondsBetweenDates;
 				responseObject.time.currentTime = now.toJSON();
 				responseObject.time.deviceTime = deviceTime.toJSON();
-				console.log(deviceTime.toJSON());
-				// Get barcodes
-				//port.write(getCodes);
+				if (port && port.isOpen) {
+					port.close(err => {
+						if (err) {
+							event.sender.send("reset-time-response", generateError(err));
+							return false;
+						}
+						console.log("RESET TIME - PORT CLOSED");
+						port = null;
+						event.sender.send("reset-time-response", responseObject);
+					});
+				} else {
+					port = null;
+					event.sender.send("reset-time-response", responseObject);
+				}
 			} else {
 				console.log("DATA -- Other command - should not be called");
 			}
