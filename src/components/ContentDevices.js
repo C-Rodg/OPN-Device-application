@@ -118,13 +118,13 @@ class ContentDevices extends Component {
 	};
 
 	// Clear device confirmed
-	handleConfirmedClear = () => {
+	handleConfirmedClear = offset => {
 		this.setState(
 			{
 				isShowingClearPortal: false
 			},
 			() => {
-				this.props.onConfirmClearDevice();
+				this.props.onConfirmClearDevice(offset);
 			}
 		);
 	};

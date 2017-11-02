@@ -171,8 +171,8 @@ class App extends Component {
 	};
 
 	// Clear the device
-	handleConfirmedClear = () => {
-		e_clearDevice(this.state.currentDevice.comName)
+	handleConfirmedClear = offset => {
+		e_clearDevice({ offset, comName: this.state.currentDevice.comName })
 			.then(data => {
 				this.handleNotification({
 					type: "success",

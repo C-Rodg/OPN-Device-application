@@ -11,7 +11,7 @@ const CurrentDeviceTile = device => {
 				<i className="material-icons">close</i>
 			</div>
 			<div
-				className="icon-card-hover reset-time-icon"
+				className="icon-card-hover reset-time-icon hidden"
 				onClick={device.resetTime}
 			>
 				<i className="material-icons">access_time</i>
@@ -52,7 +52,7 @@ const CurrentDeviceTile = device => {
 					onClick={device.clearDevice}
 				>
 					<i className="material-icons">delete_forever</i>
-					<span className="icon-title"> Clear</span>
+					<span className="icon-title"> Initialize</span>
 				</div>
 				<div
 					className="device-action action-upload"

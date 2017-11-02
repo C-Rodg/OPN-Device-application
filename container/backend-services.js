@@ -93,7 +93,7 @@ ipcMain.on("refresh-connections", (event, arg) => {
 	});
 });
 
-// EVENT - clear device
+// EVENT - clear device, reset time
 ipcMain.on("clear-device", (event, arg) => {
 	// Basic commands
 	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device
