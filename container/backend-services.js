@@ -15,8 +15,6 @@ let port = null,
 // EVENT - upload scans to service
 ipcMain.on("upload-scans", (event, arg) => {
 	const postData = generateSOAP(arg.deviceId, arg.barcodes);
-	event.sender.send("upload-scans-response", postData);
-	return false;
 	axios({
 		method: "post",
 		url:

@@ -1,4 +1,4 @@
-const uploadConfig = require("./upload-config");
+const { validarService } = require("./upload-config");
 
 const FILE_NAME = "OPN2001_DATA";
 
@@ -17,7 +17,7 @@ const getSoapHeader = deviceId => {
       <soap:Body>
         <UploadRemoteData xmlns="https://portal.validar.com/PortalWebServices/V2/RemoteDataAcquirer">
           <deviceId>${deviceId}</deviceId>
-          <partnerId>${uploadConfig.validarService.partnerId}</partnerId>`;
+          <partnerId>${validarService.partnerId}</partnerId>`;
 };
 
 // Test for session data and return appropriate dataClass guid
@@ -29,8 +29,8 @@ const getSoapDataClass = scans => {
 		}
 	});
 	return `<dataClass>${sessionFlag
-		? uploadConfig.validarService.sessionDataClass
-		: uploadConfig.validarService.leadsDataClass7}</dataClass>`;
+		? validarService.sessionDataClass
+		: validarService.leadsDataClass}</dataClass>`;
 };
 
 // Get Soap Data Files elements
@@ -49,6 +49,7 @@ const getSoapDataFiles = scans => {
 
 	// Add Data files footer
 	dataFilesString += `</Data></DataFile></dataFiles>`;
+	return dataFilesString;
 };
 
 // Convert scans object to XML
