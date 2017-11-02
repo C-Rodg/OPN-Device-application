@@ -45,7 +45,7 @@ const getSoapDataFiles = scans => {
 	const xmlScanString = convertScansToXML(scans);
 
 	// Base64 and pass into data element
-	dataFilesString += btoa(xmlScanString);
+	dataFilesString += Buffer.from(xmlScanString).toString("base64");
 
 	// Add Data files footer
 	dataFilesString += `</Data></DataFile></dataFiles>`;
