@@ -66,15 +66,22 @@ export const e_refreshConnections = () => {
 	});
 };
 
-// Clear the device
-export const e_clearDevice = obj => {
+// Initialize - clear the device, reset time
+export const e_initializeDevice = obj => {
 	return new Promise((resolve, reject) => {
 		ipcRenderer.send("clear-device", obj);
 		ipcRenderer.once("clear-device-response", (event, arg) => {
 			if (arg.error) {
 				reject(arg);
 			} else {
-				resolve(arg);
+				ipcRenderer.send("reset-time", obj);
+				ipcRenderer.once("reset-time-response", (eventReset, argReset) => {
+					if (argReset.error) {
+						reject(argReset);
+					} else {
+						resolve({ barcodes: [], time: argReset.time });
+					}
+				});
 			}
 		});
 		setTimeout(reject, DEFAULT_TIMEOUT);

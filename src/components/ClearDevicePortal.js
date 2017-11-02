@@ -92,7 +92,7 @@ class ClearDevicePortal extends Component {
 								className="portal-confirm portal-action"
 								onClick={() => this.props.onConfirmClear(this.state.offset)}
 							>
-								Delete
+								Initialize
 							</div>
 						</div>
 					</div>

@@ -21,8 +21,8 @@ class ContentSummary extends Component {
 			if (parseInt(this.props.deviceTime.clockDrift, 10) > tooMuchTimeDrift) {
 				this.props.onNotification({
 					type: "info",
-					message: "The device time and current time seem to be way off..",
-					isShort: false
+					message: "The device time and local time seem to be way off..",
+					isShort: true
 				});
 				this.setState({ timeDriftError: true });
 			}
@@ -34,8 +34,8 @@ class ContentSummary extends Component {
 			if (parseInt(nextProps.deviceTime.clockDrift, 10) > tooMuchTimeDrift) {
 				this.props.onNotification({
 					type: "info",
-					message: "The device time and current time seem to be way off..",
-					isShort: false
+					message: "The device time and local time seem to be way off..",
+					isShort: true
 				});
 				this.setState({ timeDriftError: true });
 			}

@@ -18,7 +18,7 @@ import {
 	e_closeConnection,
 	e_createConnection,
 	e_refreshConnections,
-	e_clearDevice,
+	e_initializeDevice,
 	e_resetDeviceTime
 } from "../services/electronServices";
 
@@ -170,16 +170,16 @@ class App extends Component {
 		this.msg[msgObj.type](msgObj.message, msgObj.isShort ? shortAlert : {});
 	};
 
-	// Clear the device
+	// Initialize - clear the device, set new time
 	handleConfirmedClear = offset => {
-		e_clearDevice({ offset, comName: this.state.currentDevice.comName })
+		e_initializeDevice({ offset, comName: this.state.currentDevice.comName })
 			.then(data => {
 				this.handleNotification({
 					type: "success",
 					message: "Successfully cleared device!",
 					isShort: false
 				});
-				this.setState({ barcodes: data.barcodes });
+				this.setState({ barcodes: data.barcodes, deviceTime: data.time });
 			})
 			.catch(err => {
 				console.log(err);

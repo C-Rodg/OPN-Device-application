@@ -1,6 +1,7 @@
 const electron = require("electron");
 const { ipcMain } = electron;
 const Serialport = require("serialport");
+const moment = require("moment");
 const opnUtils = require("./opn-utils");
 const uploadConfig = require("./upload-config");
 
@@ -119,7 +120,10 @@ ipcMain.on("clear-device", (event, arg) => {
 
 		if (err) {
 			console.log(err.message);
-			event.sender.send("clear-device-response", generateError(err.message));
+			event.sender.send(
+				"initialize-device-response",
+				generateError(err.message)
+			);
 		}
 
 		// On Port 'data'
@@ -133,7 +137,7 @@ ipcMain.on("clear-device", (event, arg) => {
 				port.write(clearCodes);
 			} else if (data.length === 5 && offset === 0) {
 				// Handle Clear Data command
-				console.log("DATA -- Clear/Powered Down");
+				console.log("DATA -- barcodes cleared");
 
 				if (port && port.isOpen) {
 					port.close(err => {
@@ -171,7 +175,7 @@ ipcMain.on("reset-time", (event, arg) => {
 	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device
 	const clock = new Buffer([0x0a, 0x02, 0x00, 0x5d, 0xaf]); // Get Time
 
-	if (port && port.isOpen && port.comName === com) {
+	if (port && port.isOpen && port.comName === arg.comName) {
 		console.log("PORT IS ALREADY OPEN!!");
 	} else {
 		// Create new port
@@ -214,14 +218,20 @@ ipcMain.on("reset-time", (event, arg) => {
 				// Handle Wake command
 				console.log("DATA -- Device wake for time reset");
 
-				// Set Time Info
-				const now = new Date();
-				const year = now.getFullYear() - 2000;
-				const month = now.getMonth() + 1;
-				const day = now.getDate();
-				const hr = now.getHours();
-				const mins = now.getMinutes();
-				const secs = now.getSeconds();
+				// Set Time Info with offset
+				let timeToSet;
+				if (arg.offset >= 0) {
+					timeToSet = moment().add(arg.offset, "h");
+				} else {
+					timeToSet = moment().subtract(Math.abs(arg.offset), "h");
+				}
+				const year = timeToSet.year() - 2000;
+				const month = timeToSet.month() + 1;
+				const day = timeToSet.date();
+				const hr = timeToSet.hour();
+				const mins = timeToSet.minute();
+				const secs = timeToSet.second();
+
 				const nowArr = [
 					0x09,
 					0x02,
