@@ -125,26 +125,6 @@ const extractPackedTimestamp = (b1, b2, b3, b4, b) => {
 	return extractedDate;
 };
 
-// HELPER - Set time  -- not correctly implemented, need to represent 'mappedTime' two digit format
-const resetTime = () => {
-	const now = new Date();
-	const year = now.getFullYear() - 2000;
-	const month = now.getMonth() + 1;
-	const day = now.getDate();
-	const hr = now.getHours();
-	const mins = now.getMinutes();
-	const secs = now.getSeconds();
-	const nowArr = [secs, mins, hr, day, month, year];
-	const mappedTime = nowArr
-		.map(time => {
-			String(time).codePointAt(0);
-		})
-		.join("");
-	const resetTime = new Buffer([0x09, 0x02, 0x06, mappedTime, 0x00]);
-	//do the joining stuff.. // 0x5e, 0x9f]);
-	return resetTime;
-};
-
 module.exports.SymbolCrc16 = SymbolCrc16;
 module.exports.symbologies = symbologies;
 module.exports._appendBuffer = _appendBuffer;

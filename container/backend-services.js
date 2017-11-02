@@ -2,6 +2,7 @@ const electron = require("electron");
 const { ipcMain } = electron;
 const Serialport = require("serialport");
 const opnUtils = require("./opn-utils");
+const uploadConfig = require("./upload-config");
 
 let port = null,
 	deviceList = null;

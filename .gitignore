@@ -4,5 +4,14 @@ node_modules
 #Backup
 BACKUP-NO-NODE
 
-#Tests
-test/
+#Output
+dist/
+
+# Builds
+builds/
+
+# Secrets
+container/upload-config.js
+
+# Ignore ReadMe.md changes
+README.md
