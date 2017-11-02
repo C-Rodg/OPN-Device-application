@@ -123,7 +123,7 @@ class ContentSummary extends Component {
 								Total {this.props.barcodes.length !== 1 ? "Scans" : "Scan"}
 							</span>
 						</div>
-						<div className="sum-actions">
+						<div className="sum-actions" onClick={this.props.onUploadData}>
 							<i className="material-icons">file_upload</i>
 							<span className="icon-title">Upload Now!</span>
 						</div>

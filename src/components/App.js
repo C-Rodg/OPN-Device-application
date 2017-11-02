@@ -19,7 +19,8 @@ import {
 	e_createConnection,
 	e_refreshConnections,
 	e_initializeDevice,
-	e_resetDeviceTime
+	e_resetDeviceTime,
+	e_uploadScans
 } from "../services/electronServices";
 
 class App extends Component {
@@ -127,10 +128,59 @@ class App extends Component {
 		});
 	};
 
+	// Ensure this is a valid device ID
+	validateDeviceId = num => {
+		if (typeof num === "string" && num[0] === "Q" && num.length >= 4) {
+			return num;
+		} else if (typeof num === "string" || typeof num === "number") {
+			let id = String(parseInt(num));
+			while (id.length < 3) {
+				id = "0" + id;
+			}
+			return `Q${id}`;
+		}
+		return false;
+	};
+
 	// Upload Device Data
 	handleUploadCurrentData = () => {
-		console.log("uploading...");
-		console.log(this.state.barcodes);
+		if (!this.state.barcodes.length) {
+			this.handleNotification({
+				message: "No data to upload...",
+				type: "error",
+				isShort: true
+			});
+			return false;
+		}
+		console.log(this.state);
+		const deviceId = this.validateDeviceId(this.state.deviceInfo.device);
+		if (!deviceId) {
+			this.handleNotification({
+				message: "Invalid device ID...",
+				type: "error",
+				isShort: true
+			});
+			return false;
+		}
+		e_uploadScans({ barcodes: this.state.barcodes, deviceId })
+			.then(data => {
+				console.log(data);
+				this.handleNotification({
+					message: `Data uploaded for device ${parseInt(
+						this.state.deviceInfo.device
+					)}`,
+					type: "success",
+					isShort: false
+				});
+			})
+			.catch(err => {
+				console.log(err);
+				this.handleNotification({
+					message: "There was an issue uploading scans..",
+					type: "error",
+					isShort: false
+				});
+			});
 	};
 
 	// Refresh Device List
@@ -232,6 +282,7 @@ class App extends Component {
 									deviceTime={this.state.deviceTime}
 									barcodes={this.state.barcodes}
 									onNotification={this.handleNotification}
+									onUploadData={this.handleUploadCurrentData}
 								/>
 							);
 						}}
@@ -275,6 +326,7 @@ class App extends Component {
 									deviceInfo={this.state.deviceInfo}
 									onConfirmClearDevice={this.handleConfirmedClear}
 									onConfirmResetTime={this.handleResetTime}
+									onUploadData={this.handleUploadCurrentData}
 								/>
 							);
 						}}

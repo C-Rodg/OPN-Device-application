@@ -19,7 +19,7 @@ const Chart = ({ title, data }) => {
 						<g className="bar" key={point.id}>
 							<rect width={width} height="29" y={rectY} rx="2" ry="2" />
 							<text x={width + 10} y={rectY + 14.5} dy=".35em">
-								{point.total} {point.total > 1 ? "scans" : "scan"} on{" "}
+								{point.total} {point.total > 1 ? "scans" : "scan"} at{" "}
 								{point.time}
 							</text>
 						</g>

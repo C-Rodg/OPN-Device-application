@@ -88,10 +88,27 @@ export const e_initializeDevice = obj => {
 	});
 };
 
+// Reset the device time
 export const e_resetDeviceTime = comName => {
 	return new Promise((resolve, reject) => {
 		ipcRenderer.send("reset-time", { comName });
 		ipcRenderer.once("reset-time-response", (event, arg) => {
+			if (arg.error) {
+				reject(arg);
+			} else {
+				resolve(arg);
+			}
+		});
+		setTimeout(reject, DEFAULT_TIMEOUT);
+	});
+};
+
+// Upload barcodes
+export const e_uploadScans = scanObj => {
+	return new Promise((resolve, reject) => {
+		ipcRenderer.send("upload-scans", scanObj);
+		ipcRenderer.once("upload-scans-response", (event, arg) => {
+			console.log(arg);
 			if (arg.error) {
 				reject(arg);
 			} else {

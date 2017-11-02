@@ -60,7 +60,7 @@ class ContentDevices extends Component {
 				{...this.props.currentDevice}
 				closeDevice={this.props.onCloseConnection}
 				clearDevice={this.handleClearCurrentClick}
-				uploadDevice={this.handleUploadCurrentClick}
+				uploadDevice={this.props.onUploadData}
 				resetTime={this.handleResetTimeClick}
 				deviceId={parseInt(this.props.deviceInfo.device)}
 				currentTime={moment(
@@ -94,11 +94,6 @@ class ContentDevices extends Component {
 				this.props.onConfirmResetTime();
 			}
 		);
-	};
-
-	// Upload scans from current device
-	handleUploadCurrentClick = () => {
-		// handle upload...
 	};
 
 	// Clear scans from current device

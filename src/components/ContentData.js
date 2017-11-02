@@ -61,7 +61,9 @@ class ContentData extends Component {
 		}
 		const scan = {
 			data,
-			time: moment().format(quickDateFormat),
+			time: moment()
+				//.utc()
+				.format(quickDateFormat),
 			type: "MANUAL"
 		};
 		this.props.onConfirmAdd(this.state.editPosition, scan);
@@ -134,18 +136,33 @@ class ContentData extends Component {
 		);
 	};
 
+	// Display Scan Count
+	renderScanCountText = () => {
+		if (this.props.barcodes && this.props.barcodes.length) {
+			return this.props.barcodes.length !== 1
+				? `${this.props.barcodes.length} Scans:`
+				: `${this.props.barcodes.length} Scan:`;
+		} else {
+			return (
+				<div>
+					No Scans...<i
+						className="material-icons no-scans-add"
+						onClick={() => this.openAddModal(0)}
+					>
+						add_circle_outline
+					</i>
+				</div>
+			);
+		}
+	};
+
 	render() {
 		return (
 			<div className="container content-data">
 				<ActionButton icon="file_upload" cb={this.props.onUploadData} />
 				<div className="content-scans-list">
 					<div className="pre-card-section-title">
-						{this.props.barcodes && this.props.barcodes.length
-							? `${this.props.barcodes.length} ${this.props.barcodes.length !==
-								1
-									? "Scans:"
-									: "Scan:"}`
-							: "No Scans.."}
+						{this.renderScanCountText()}
 					</div>
 					<div className="scans-list-list card">{this.renderScans()}</div>
 				</div>

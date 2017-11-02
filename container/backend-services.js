@@ -1,12 +1,41 @@
+// Imports
 const electron = require("electron");
 const { ipcMain } = electron;
 const Serialport = require("serialport");
 const moment = require("moment");
+const axios = require("axios");
+
+// Settings/Utilities
 const opnUtils = require("./opn-utils");
-const uploadConfig = require("./upload-config");
+const { generateSOAP } = require("./upload-utils");
 
 let port = null,
 	deviceList = null;
+
+// EVENT - upload scans to service
+ipcMain.on("upload-scans", (event, arg) => {
+	const postData = generateSOAP(arg.deviceId, arg.barcodes);
+	event.sender.send("upload-scans-response", postData);
+	return false;
+	axios({
+		method: "post",
+		url:
+			"https://portal.validar.com/WebServices/V2/RemoteDataAcquirer/RemoteDataAcquirerService.asmx",
+		headers: {
+			"Content-Type": "text/xml; charset=utf-8",
+			SOAPAction:
+				"https://portal.validar.com/PortalWebServices/V2/RemoteDataAcquirer/UploadRemoteData",
+			Host: "portal.validar.com"
+		},
+		data: postData
+	})
+		.then(resp => {
+			event.sender.send("upload-scans-response", resp);
+		})
+		.catch(err => {
+			event.sender.send("upload-scans-response", err);
+		});
+});
 
 // EVENT - bootup application
 ipcMain.on("bootup-application", (event, arg) => {
@@ -169,7 +198,7 @@ ipcMain.on("clear-device", (event, arg) => {
 	});
 });
 
-// Reset device time
+// EVENT - reset device time
 ipcMain.on("reset-time", (event, arg) => {
 	// Basic commands
 	const wake = new Buffer([0x01, 0x02, 0x00, 0x9f, 0xde]); // Wake up device
