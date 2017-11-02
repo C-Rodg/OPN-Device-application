@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import moment from "moment";
 
-import { quickDateFormat } from "../utils/dateFormats";
+import { quickDateFormat, addDateFormat } from "../utils/dateFormats";
 import "../styles/data.css";
 import ScanListItem from "./ScanListItem";
 import DeleteItemPortal from "./DeleteItemPortal";
@@ -61,9 +61,10 @@ class ContentData extends Component {
 		}
 		const scan = {
 			data,
-			time: moment()
-				//.utc()
-				.format(quickDateFormat),
+			time:
+				moment()
+					.utc()
+					.format(addDateFormat) + ".000Z",
 			type: "MANUAL"
 		};
 		this.props.onConfirmAdd(this.state.editPosition, scan);
@@ -100,7 +101,7 @@ class ContentData extends Component {
 	renderChart = () => {
 		const codesObject = {};
 		this.props.barcodes.forEach(code => {
-			const d = moment(code.time, quickDateFormat).format("YYYY-MM-DDTHH");
+			let d = moment(code.time, quickDateFormat).format("YYYY-MM-DDTHH");
 			if (codesObject.hasOwnProperty(d)) {
 				codesObject[d] += 1;
 			} else {

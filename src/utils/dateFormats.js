@@ -1,5 +1,6 @@
-export const quickDateFormat = "YYYY-MM-DDTHH:mm:ss.SSSSZ";
+export const quickDateFormat = "YYYY-MM-DDTHH:mm:ss.SSSZ";
 export const displayDateFormat = "h:mm a, MMM Do, YYYY";
+export const addDateFormat = "YYYY-MM-DDTHH:mm:ss";
 
 export const getClockDrift = time => {
 	let secs = parseInt(time, 10);
