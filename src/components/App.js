@@ -144,6 +144,7 @@ class App extends Component {
 
 	// Upload Device Data
 	handleUploadCurrentData = () => {
+		// No data to upload
 		if (!this.state.barcodes.length) {
 			this.handleNotification({
 				message: "No data to upload...",
@@ -153,10 +154,22 @@ class App extends Component {
 			return false;
 		}
 		console.log(this.state);
+
+		// Invalid Device ID
 		const deviceId = this.validateDeviceId(this.state.deviceInfo.device);
 		if (!deviceId) {
 			this.handleNotification({
 				message: "Invalid device ID...",
+				type: "error",
+				isShort: true
+			});
+			return false;
+		}
+
+		// No internet
+		if (!window.navigator.onLine) {
+			this.handleNotification({
+				message: "No internet connection...",
 				type: "error",
 				isShort: true
 			});
