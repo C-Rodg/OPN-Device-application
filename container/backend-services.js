@@ -10,7 +10,8 @@ const opnUtils = require("./opn-utils");
 const { generateSOAP } = require("./upload-utils");
 
 let port = null,
-	deviceList = null;
+	deviceList = null,
+	currentDeviceId = null;
 
 // EVENT - upload scans to service
 ipcMain.on("upload-scans", (event, arg) => {
@@ -114,6 +115,7 @@ ipcMain.on("refresh-connections", (event, arg) => {
 		// Get Device Info
 		console.log("Refreshed devices");
 		deviceList = ports;
+		console.log(ports);
 		event.sender.send("refresh-connections-response", {
 			success: true,
 			deviceList
@@ -438,6 +440,9 @@ const getDeviceInfo = (com, event, responseName) => {
 				const sw_ver = data.slice(12, 20);
 				responseObject.info.device = `${serial.toString("hex")}`;
 				responseObject.info.firmware = `${sw_ver.toString()}`;
+
+				// Assign Device ID to global variable
+				//currentDeviceId = String(parseInt(serial.toString("hex")));
 
 				// Get Clock info
 				port.write(clock);
